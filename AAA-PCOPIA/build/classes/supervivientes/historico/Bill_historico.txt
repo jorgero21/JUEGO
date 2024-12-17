@@ -1,0 +1,14 @@
+Histórico:
+
+Histórico:
+
+ID: 10 - Tipo: CORREDOR - Normal: true - Berserker: false - Tóxico: false - Posición: ((2, 1))
+
+ID: 12 - Tipo: CAMINANTE - Normal: false - Berserker: false - Tóxico: true - Posición: ((2, 0))
+
+Histórico:
+
+Histórico:
+
+Histórico:
+

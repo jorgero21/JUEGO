@@ -1,0 +1,13 @@
+Arma,Rifle,2,2,4,3
+Arma,Bate de beisbol,2,0,2,4
+Arma,Sniper,3,4,2,2
+Arma,Martillo,3,0,3,2
+Arma,Cuchillo,1,0,4,1
+Arma,Katana,4,0,1,1
+Arma,Pistola,1,2,3,2
+Arma,Escopeta,3,0,2,2
+Provision,Ensalada,10,04/11/2025
+Provision,Agua,10,04/11/2025
+Provision,Tortilla,20,04/11/2025
+Provision,Cheetos,5,04/11/2025
+

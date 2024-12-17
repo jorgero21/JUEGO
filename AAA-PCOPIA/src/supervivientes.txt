@@ -1,0 +1,8 @@
+Zoey,true,0,0
+Louis,true,0,0
+Francis,true,0,0
+Bill,true,0,0
+Ellis,true,0,0
+Nick,true,0,0
+Coach,true,0,0
+Rochelle,true,0,0
