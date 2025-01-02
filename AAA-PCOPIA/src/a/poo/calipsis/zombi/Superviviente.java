@@ -350,47 +350,193 @@ public class Superviviente implements Activable, Serializable {
 
         // Procesar cada éxito individualmente
        // Procesar cada éxito individualmente
+    while (exitos > 0) {
+        // Preguntar si el jugador desea usar el éxito
+        String decision = "";
+        while (true) {
+            System.out.println("¿Deseas usar el siguiente éxito para atacar? (s/n)");
+            decision = scanner.next();
+
+            if (decision.equalsIgnoreCase("s")) {
+            // Selección de la casilla objetivo
+            System.out.println("Introduce las coordenadas de la casilla objetivo:");
+            tablero.mostrarTablero();
+
+            // Validar que la fila sea un número entero
+            int fila = -1;
+            while (fila < 0) {
+                System.out.print("Fila: ");
+                if (scanner.hasNextInt()) {
+                    fila = scanner.nextInt();
+                    if (fila < 0) {
+                        System.out.println("Por favor, introduce un número positivo para la fila.");
+                    }
+                } else {
+                    System.out.println("Entrada inválida. Debes ingresar un número.");
+                    scanner.next(); // Limpiar el buffer del scanner
+                }
+            }
+
+            // Validar que la columna sea un número entero
+            int columna = -1;
+            while (columna < 0) {
+                System.out.print("Columna: ");
+                if (scanner.hasNextInt()) {
+                    columna = scanner.nextInt();
+                    if (columna < 0) {
+                        System.out.println("Por favor, introduce un número positivo para la columna.");
+                    }
+                } else {
+                    System.out.println("Entrada inválida. Debes ingresar un número.");
+                    scanner.next(); // Limpiar el buffer del scanner
+                }
+            }
+
+            Casilla casillaObjetivo = tablero.getCasilla(fila, columna);
+
+            if (casillaObjetivo == null) {
+                System.out.println("La casilla objetivo no existe. Intenta de nuevo.");
+                continue; // Volver a intentar
+            }
+
+            // Verificar si la casilla está dentro del alcance del arma
+            int distancia = tablero.calcularDistancia(this.coordenada, casillaObjetivo.getCoordenadas());
+            if (armaSeleccionada.getAlcance() == 0 && distancia > 0) {
+                System.out.println("El arma es de cuerpo a cuerpo. Debes atacar una casilla donde estés.");
+                continue; // Volver a intentar
+            }
+            if (armaSeleccionada.getAlcance() > 0 && distancia > armaSeleccionada.getAlcance()) {
+                System.out.println("La casilla está fuera del alcance del arma.");
+                continue; // Volver a intentar
+            }
+
+            // Verificar si hay zombis en la casilla
+            List<Zombi> zombisEnCasilla = new ArrayList<>();
+            for (Object entidad : casillaObjetivo.getEntidades()) {
+                if (entidad instanceof Zombi) {
+                    zombisEnCasilla.add((Zombi) entidad);
+                }
+            }
+
+            if (zombisEnCasilla.isEmpty()) {
+                System.out.println("No hay zombis en la casilla seleccionada.");
+                continue; // Volver a intentar
+            }
+
+            // Realizar el ataque para cada zombi en la casilla
+            for (Zombi z : zombisEnCasilla) {
+                // Si es un zombi Berserker y el arma es a distancia, ignorar
+                if (z.isBerserker() && armaSeleccionada.getAlcance() > 0) {
+                    this.restarAccion();
+                    System.out.println("El zombi Berserker es inmune a ataques a distancia.");
+                    exitos--; // Restar un éxito aunque no se ataque al zombi
+                    continue;
+                }
+
+                // Si el zombi puede ser eliminado
+                if (z.getAguante() <= armaSeleccionada.getPotencia()) {
+                    this.restarAccion();
+                    System.out.println("El zombi " + z.getTipo() + " ha sido eliminado.");
+                    agregarZombiEliminado(z);
+                    exitos--;
+                    z.setVivo(false);
+                    // Comprobar si el zombi es tóxico y si está en la misma casilla
+                    if (z.isToxico() && this.coordenada.equals(casillaObjetivo.getCoordenadas())) {
+                        System.out.println("El zombi tóxico te ha causado una herida al ser eliminado!");
+                        recibirHerida(z);
+                    }
+                    casillaObjetivo.eliminarEntidad(z); // Eliminar el zombi de la casilla
+                    tablero.mostrarTablero();
+                    agregarZombisEliminados(z);
+                    zombis_eliminados++;
+                    almacen.registrarAtaque(ataque, rutaAlmacenAtaques);
+                    System.out.println("Número de ataques: " + almacen.getAtaques2().size());
+                } else {
+                    System.out.println("El zombi " + z.getTipo() + " es demasiado resistente para este ataque.");
+                    this.restarAccion();
+                    exitos--; // Restar un éxito aunque no sea derrotado
+                }
+
+                // Detenerse si no hay más éxitos disponibles
+                if (exitos == 0) {
+                    break;
+                }
+            }
+
+            // Si no hay más éxitos, terminar el ataque
+            if (exitos == 0) {
+                System.out.println("No hay más éxitos disponibles.");
+            }
+        }
+     else if (decision.equalsIgnoreCase("n")) {
+                // Si el jugador selecciona "n", no hacer nada y restar el éxito
+                exitos--;  
+                System.out.println("El éxito no se utilizará.");
+                break; // Sale del bucle de decisiones y pasa al siguiente éxito
+            } else {
+                // Si la entrada es inválida, mostrar mensaje y pedir una nueva entrada
+                System.out.println("Entrada inválida. Por favor, ingresa 's' para usar el éxito o 'n' para no usarlo.");
+            }
+        }
+
+        // Si el jugador eligió "s", se procede con la selección de la casilla objetivo
+    }
+
+    } else {
+        System.out.println("No se consiguieron éxitos. El ataque ha fallado.");
+    }
+}
+
+
+    public void atacarSimulacion(Tablero tablero, AlmacenAtaques almacen, Juego j) throws IOException {
+        if (armasActivas.isEmpty()) {
+            System.out.println("No tienes armas activas. Usa el comando 'elegirArmaActiva' para activar una.");
+            return;
+        }
+
+        // Mostrar las armas activas y permitir elegir una
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Selecciona un arma activa para atacar:");
+
+        for (int i = 0; i < armasActivas.size(); i++) {
+            System.out.println((i + 1) + ". " + armasActivas.get(i).getNombre() + 
+                               " (Alcance: " + armasActivas.get(i).getAlcance() + 
+                               ", Dados: " + armasActivas.get(i).getNumeroDados() + 
+                               ", Potencia: " + armasActivas.get(i).getPotencia() + ")");
+        }
+
+        int seleccion = scanner.nextInt();
+
+        if (seleccion < 1 || seleccion > armasActivas.size()) {
+            System.out.println("Selección inválida. Ataque cancelado.");
+            return;
+        }
+
+        Arma armaSeleccionada = armasActivas.get(seleccion - 1);
+
+        // Crear un nuevo ataque
+        Ataque ataque = new Ataque(armaSeleccionada.getNumeroDados());
+        int exitos = ataque.lanzarDados(armaSeleccionada.getValorExito()); // Lanzar los dados y calcular éxitos
+
+        if (exitos > 0) {
+            System.out.println("Se han obtenido " + exitos + " éxitos.");
+
+            // Procesar cada éxito individualmente
+            // Procesar cada éxito individualmente
 while (exitos > 0) {
     // Preguntar si el jugador desea usar el éxito
-    String decision = "";
-    while (true) {
-        System.out.println("¿Deseas usar el siguiente éxito para atacar? (s/n)");
-        decision = scanner.next();
+    System.out.println("¿Deseas usar el siguiente éxito para atacar? (s/n)");
+    String decision = scanner.next();
 
-        if (decision.equalsIgnoreCase("s")) {
+    if (decision.equalsIgnoreCase("s")) {
+        // Aquí se ejecutará el código que solo se debe realizar si el jugador decide usar el éxito
         // Selección de la casilla objetivo
         System.out.println("Introduce las coordenadas de la casilla objetivo:");
         tablero.mostrarTablero();
-
-        // Validar que la fila sea un número entero
-        int fila = -1;
-        while (fila < 0) {
-            System.out.print("Fila: ");
-            if (scanner.hasNextInt()) {
-                fila = scanner.nextInt();
-                if (fila < 0) {
-                    System.out.println("Por favor, introduce un número positivo para la fila.");
-                }
-            } else {
-                System.out.println("Entrada inválida. Debes ingresar un número.");
-                scanner.next(); // Limpiar el buffer del scanner
-            }
-        }
-
-        // Validar que la columna sea un número entero
-        int columna = -1;
-        while (columna < 0) {
-            System.out.print("Columna: ");
-            if (scanner.hasNextInt()) {
-                columna = scanner.nextInt();
-                if (columna < 0) {
-                    System.out.println("Por favor, introduce un número positivo para la columna.");
-                }
-            } else {
-                System.out.println("Entrada inválida. Debes ingresar un número.");
-                scanner.next(); // Limpiar el buffer del scanner
-            }
-        }
+        System.out.print("Fila: ");
+        int fila = scanner.nextInt();
+        System.out.print("Columna: ");
+        int columna = scanner.nextInt();
 
         Casilla casillaObjetivo = tablero.getCasilla(fila, columna);
 
@@ -440,6 +586,7 @@ while (exitos > 0) {
                 agregarZombiEliminado(z);
                 exitos--;
                 z.setVivo(false);
+
                 // Comprobar si el zombi es tóxico y si está en la misma casilla
                 if (z.isToxico() && this.coordenada.equals(casillaObjetivo.getCoordenadas())) {
                     System.out.println("El zombi tóxico te ha causado una herida al ser eliminado!");
@@ -449,8 +596,6 @@ while (exitos > 0) {
                 tablero.mostrarTablero();
                 agregarZombisEliminados(z);
                 zombis_eliminados++;
-                almacen.registrarAtaque(ataque, rutaAlmacenAtaques);
-                System.out.println("Número de ataques: " + almacen.getAtaques2().size());
             } else {
                 System.out.println("El zombi " + z.getTipo() + " es demasiado resistente para este ataque.");
                 this.restarAccion();
@@ -467,157 +612,17 @@ while (exitos > 0) {
         if (exitos == 0) {
             System.out.println("No hay más éxitos disponibles.");
         }
-    }
- else if (decision.equalsIgnoreCase("n")) {
-            // Si el jugador selecciona "n", no hacer nada y restar el éxito
-            exitos--;  
-            System.out.println("El éxito no se utilizará.");
-            break; // Sale del bucle de decisiones y pasa al siguiente éxito
-        } else {
-            // Si la entrada es inválida, mostrar mensaje y pedir una nueva entrada
-            System.out.println("Entrada inválida. Por favor, ingresa 's' para usar el éxito o 'n' para no usarlo.");
-        }
-    }
 
-    // Si el jugador eligió "s", se procede con la selección de la casilla objetivo
-}
-
+    } else if (decision.equalsIgnoreCase("n")) {
+        // Si el jugador decide no usar el éxito, simplemente restamos un éxito
+        System.out.println("El éxito no se utilizará.");
+        exitos--; // Restar un éxito sin usarlo
+        continue; // Pasar al siguiente éxito
     } else {
-        System.out.println("No se consiguieron éxitos. El ataque ha fallado.");
+        // Si la entrada no es válida, mostrar un mensaje y pedir nuevamente
+        System.out.println("Entrada inválida. Por favor, ingresa 's' para usar el éxito o 'n' para no usarlo.");
     }
 }
-
-
-        public void atacarSimulacion(Tablero tablero, AlmacenAtaques almacen, Juego j) throws IOException {
-        if (armasActivas.isEmpty()) {
-            System.out.println("No tienes armas activas. Usa el comando 'elegirArmaActiva' para activar una.");
-            return;
-        }
-
-        // Mostrar las armas activas y permitir elegir una
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Selecciona un arma activa para atacar:");
-
-        for (int i = 0; i < armasActivas.size(); i++) {
-            System.out.println((i + 1) + ". " + armasActivas.get(i).getNombre() + 
-                               " (Alcance: " + armasActivas.get(i).getAlcance() + 
-                               ", Dados: " + armasActivas.get(i).getNumeroDados() + 
-                               ", Potencia: " + armasActivas.get(i).getPotencia() + ")");
-        }
-
-        int seleccion = scanner.nextInt();
-
-        if (seleccion < 1 || seleccion > armasActivas.size()) {
-            System.out.println("Selección inválida. Ataque cancelado.");
-            return;
-        }
-
-        Arma armaSeleccionada = armasActivas.get(seleccion - 1);
-
-        // Crear un nuevo ataque
-        Ataque ataque = new Ataque(armaSeleccionada.getNumeroDados());
-        int exitos = ataque.lanzarDados(armaSeleccionada.getValorExito()); // Lanzar los dados y calcular éxitos
-
-        if (exitos > 0) {
-            System.out.println("Se han obtenido " + exitos + " éxitos.");
-
-            // Procesar cada éxito individualmente
-            while (exitos > 0) {
-                // Preguntar si el jugador desea usar el éxito
-                System.out.println("¿Deseas usar el siguiente éxito para atacar? (s/n)");
-                String decision = scanner.next();
-
-                if (decision.equalsIgnoreCase("n")) {
-                    System.out.println("El éxito no se utilizará.");
-                    exitos--;
-                     // Restar un éxito sin usarlo
-                    continue; // Pasar al siguiente éxito
-                }
-
-                // Selección de la casilla objetivo
-                System.out.println("Introduce las coordenadas de la casilla objetivo:");
-                tablero.mostrarTablero();
-                System.out.print("Fila: ");
-                int fila = scanner.nextInt();
-                System.out.print("Columna: ");
-                int columna = scanner.nextInt();
-
-                Casilla casillaObjetivo = tablero.getCasilla(fila, columna);
-
-                if (casillaObjetivo == null) {
-                    System.out.println("La casilla objetivo no existe. Intenta de nuevo.");
-                    continue; // Volver a intentar
-                }
-
-                // Verificar si la casilla está dentro del alcance del arma
-                int distancia = tablero.calcularDistancia(this.coordenada, casillaObjetivo.getCoordenadas());
-                if (armaSeleccionada.getAlcance() == 0 && distancia > 0) {
-                    System.out.println("El arma es de cuerpo a cuerpo. Debes atacar una casilla donde estés.");
-                    continue; // Volver a intentar
-                }
-                if (armaSeleccionada.getAlcance() > 0 && distancia > armaSeleccionada.getAlcance()) {
-                    System.out.println("La casilla está fuera del alcance del arma.");
-                    continue; // Volver a intentar
-                }
-
-                // Verificar si hay zombis en la casilla
-                List<Zombi> zombisEnCasilla = new ArrayList<>();
-                for (Object entidad : casillaObjetivo.getEntidades()) {
-                    if (entidad instanceof Zombi) {
-                        zombisEnCasilla.add((Zombi) entidad);
-                    }
-                }
-
-                if (zombisEnCasilla.isEmpty()) {
-                    System.out.println("No hay zombis en la casilla seleccionada.");
-                    continue; // Volver a intentar
-                }
-
-                // Realizar el ataque para cada zombi en la casilla
-                for (Zombi z : zombisEnCasilla) {
-                    // Si es un zombi Berserker y el arma es a distancia, ignorar
-                    if (z.isBerserker() && armaSeleccionada.getAlcance() > 0) {
-                         this.restarAccion();
-                        System.out.println("El zombi Berserker es inmune a ataques a distancia.");
-                        exitos--; // Restar un éxito aunque no se ataque al zombi
-                        continue;
-                    }
-
-                    // Si el zombi puede ser eliminado
-                    if (z.getAguante() <= armaSeleccionada.getPotencia()) {
-                         this.restarAccion();
-                        System.out.println("El zombi " + z.getTipo() + " ha sido eliminado.");
-                        agregarZombiEliminado(z);
-                        exitos--;
-                        z.setVivo(false);
-                         // Comprobar si el zombi es tóxico y si está en la misma casilla
-                        if (z.isToxico() && this.coordenada.equals(casillaObjetivo.getCoordenadas())) {
-                            System.out.println("El zombi tóxico te ha causado una herida al ser eliminado!");
-                            recibirHerida(z);
-                           
-
-                        }
-                        casillaObjetivo.eliminarEntidad(z); // Eliminar el zombi de la casilla
-                        tablero.mostrarTablero();
-                        agregarZombisEliminados(z);
-                        zombis_eliminados++;
-                    } else {
-                        System.out.println("El zombi " + z.getTipo() + " es demasiado resistente para este ataque.");
-                         this.restarAccion();
-                        exitos--; // Restar un éxito aunque no sea derrotado
-                    }
-
-                    // Detenerse si no hay más éxitos disponibles
-                    if (exitos == 0) {
-                        break;
-                    }
-                }
-
-                // Si no hay más éxitos, terminar el ataque
-                if (exitos == 0) {
-                    System.out.println("No hay más éxitos disponibles.");
-                }
-            }
         } else {
             System.out.println("No se consiguieron éxitos. El ataque ha fallado.");
         }

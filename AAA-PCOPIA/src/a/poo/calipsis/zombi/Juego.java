@@ -941,7 +941,7 @@ public String getNombrePartida() {
     }
 
     Scanner scanner = new Scanner(System.in);
-int tamaño;
+    int tamaño;
     // Preguntar el tamaño del tablero
     while (true) {
     System.out.println("¿Qué tamaño deseas para el tablero? (Ejemplo: 10 para un tablero 10x10): ");
@@ -1100,34 +1100,34 @@ while (true) {
                 }
                 // Acción de agregar un zombi
                 // Acción de agregar un zombi
-if (respuesta.equals("a")) {
-    System.out.println("¿Cuántos zombis deseas agregar?");
-    int numZombisAgregar;
-    while (true) {
-        if (scanner.hasNextInt()) {
-            numZombisAgregar = scanner.nextInt();
-            scanner.nextLine();  // Consumir el salto de línea pendiente
-            if (numZombisAgregar > 0) {  // Permitir solo valores positivos
-                break;  // Salir del bucle si el número es válido
-            } else {
-                System.out.println("El número de zombis no puede ser negativo. Intenta nuevamente.");
-            }
-        } else {
-            System.out.println("Entrada no válida. Debes ingresar un número entero.");
-            scanner.nextLine();  // Limpiar el buffer de entrada
-        }
-    }
+                if (respuesta.equals("a")) {
+                    System.out.println("¿Cuántos zombis deseas agregar?");
+                    int numZombisAgregar;
+                    while (true) {
+                        if (scanner.hasNextInt()) {
+                            numZombisAgregar = scanner.nextInt();
+                            scanner.nextLine();  // Consumir el salto de línea pendiente
+                            if (numZombisAgregar > 0) {  // Permitir solo valores positivos
+                                break;  // Salir del bucle si el número es válido
+                            } else {
+                                System.out.println("El número de zombis no puede ser negativo. Intenta nuevamente.");
+                            }
+                        } else {
+                            System.out.println("Entrada no válida. Debes ingresar un número entero.");
+                            scanner.nextLine();  // Limpiar el buffer de entrada
+                        }
+                    }
 
-    // Generar y agregar los nuevos zombis
-    for (int i = 0; i < numZombisAgregar; i++) {
-        Zombi nuevoZombi = tablero.generarZombiManual(tablero, id);
-        if (nuevoZombi != null) {
-            id++;
-            zombis.add(nuevoZombi);  // Agregar el nuevo zombi a la lista
-            System.out.println("Zombi generado: " + nuevoZombi.getTipo());
-        }
-    }
-}
+                    // Generar y agregar los nuevos zombis
+                    for (int i = 0; i < numZombisAgregar; i++) {
+                        Zombi nuevoZombi = tablero.generarZombiManual(tablero, id);
+                        if (nuevoZombi != null) {
+                            id++;
+                            zombis.add(nuevoZombi);  // Agregar el nuevo zombi a la lista
+                            System.out.println("Zombi generado: " + nuevoZombi.getTipo());
+                        }
+                    }
+                }
 
 
                 // Salir del bucle si se finaliza el juego
@@ -1373,7 +1373,7 @@ if (respuesta.equals("a")) {
             int tamaño;
                 // Preguntar el tamaño del tablero
                 while (true) {
-                System.out.println("¿Qué tamaño deseas para el tablero? (Ejemplo: 10 para un tablero 10x10): ");
+                System.out.println("Que tamanio deseas para el tablero? (Ejemplo: 10 para un tablero 10x10): ");
 
                 if (scanner.hasNextInt()) {
                     tamaño = scanner.nextInt();
@@ -1383,10 +1383,10 @@ if (respuesta.equals("a")) {
                     if (tamaño > 1 && tamaño < 11) {
                         break;  // Salir del bucle si el tamaño es válido
                     } else {
-                        System.out.println("El tamaño debe estar entre 2 y 10. Intenta nuevamente.");
+                        System.out.println("El tamanio debe estar entre 2 y 10. Intenta nuevamente.");
                     }
                 } else {
-                    System.out.println("Entrada no válida. Debes ingresar un número entero.");
+                    System.out.println("Entrada no valida. Debes ingresar un número entero.");
                     scanner.nextLine(); // Limpiar el buffer de entrada
                 }
             }
@@ -1419,7 +1419,7 @@ if (respuesta.equals("a")) {
                 if (fila >= 0 && fila < tamaño) {
                     break;
                 } else {
-                    System.out.println("La fila es inválida. Debe estar dentro del rango del tablero.");
+                    System.out.println("La fila es invalida. Debe estar dentro del rango del tablero.");
                 }
             } else {
                 System.out.println("Entrada no válida. Debes ingresar un número entero para la fila.");
@@ -1447,7 +1447,6 @@ if (respuesta.equals("a")) {
             // Crear la coordenada y asignársela al superviviente
             Coordenada coordenada = new Coordenada(fila, columna);
             Superviviente supervivienteConCoordenada = new Superviviente(superviviente.getNombre(), coordenada);
-
             // Añadir el superviviente con la coordenada al nuevo listado
             supervivientesConCoordenadas.add(supervivienteConCoordenada);
         }
@@ -1475,27 +1474,80 @@ if (respuesta.equals("a")) {
                 System.out.println("Zombi generado: " + nuevoZombi.getTipo());
             }
         }
+        
 
         // Inicializar el contador de turnos
         int turno = 1;
         tablero.asignarSupervivientesAlTablero(supervivientesConCoordenadas);
         //tablero.mostrarTableroSimulacion(tamaño);
-
         // Bucle principal del juego
         while (enJuego) {
             System.out.println("Turno " + turno);
+   tablero.mostrarTableroSimulacion(tamaño); 
+            // Consultar información antes de la acción de cada superviviente
 
-            for (Zombi z : zombis) {
+            System.out.println("\n¿Deseas consultar información del zombi?");
+            System.out.println("1. Consultar zombi");
+            System.out.println("2. Continuar con las acciones");
+            System.out.print("Elige una opción: ");
+
+            if (scanner.hasNextInt()) { // Verifica que el usuario introduzca un número
+                int opcion = scanner.nextInt();
+                scanner.nextLine(); // Consumir el salto de línea
+
+                switch (opcion) {
+
+                    case 1: // Consultar zombis
+                        System.out.println("Zombis en el tablero:");
+                        for (int i = 0; i < zombis.size(); i++) {
+                             Zombi zombi = zombis.get(i);
+
+                            System.out.println((i + 1) + ". Tipo: " + zombi.getTipo()+
+                                               ", Aguante: " + zombi.getAguante() +
+                                               ", Activación: " + (zombi.getActivaciones()));
+                        }
+                        System.out.print("Elige el número del zombi para ver detalles (o 0 para volver): ");
+
+                        if (scanner.hasNextInt()) { // Verifica que la selección sea un número
+                            int indiceZombi = scanner.nextInt() - 1;
+                            scanner.nextLine(); // Consumir el salto de línea
+                            if (indiceZombi >= 0 && indiceZombi < zombis.size()) {
+                                Zombi zombiSeleccionado = zombis.get(indiceZombi);
+
+                                // Determinar el subtipo del zombi seleccionado
+                                String tipoZombi = null;
+                                if (zombiSeleccionado.isNormal()) {
+                                    tipoZombi = "Normal";
+                                } else if (zombiSeleccionado.isBerserker()) {
+                                    tipoZombi = "Berserker";
+                                } else if (zombiSeleccionado.isToxico()) {
+                                    tipoZombi = "Toxico";
+                                }
+
+                                System.out.println("Detalles del zombi:");
+                                System.out.println("Tipo: " + zombiSeleccionado.getTipo());
+                                 System.out.println("Subtipo: " + tipoZombi);
+                                System.out.println("Aguante: " + zombiSeleccionado.getAguante());
+                                System.out.println("Activación: " + (zombiSeleccionado.getActivaciones()));
+                            } else if (indiceZombi == -1) {
+                                System.out.println("Volviendo al menú principal...");
+                            } else {
+                                System.out.println("Número inválido. Por favor, selecciona un zombi de la lista.");
+                            }
+                        } else {
+                            System.out.println("Entrada inválida. Debes ingresar un número.");
+                            scanner.nextLine(); // Limpiar el buffer en caso de error
+                        }
+                        break;
+
+                    case 2: // Continuar con las acciones
+                           for (Zombi z : zombis) {
                 z.actualizarListaSupervivientes(supervivientesSeleccionados);
                 z.acercarseAlSupervivienteSimulacion(z, supervivientesConCoordenadas, tablero);
                 //tablero.mostrarTableroSimulacion(tamaño); 
             }
               System.out.println("\n ");
-            tablero.mostrarTableroSimulacion(tamaño); 
-            // Consultar información antes de la acción de cada superviviente
-            if (consultaHabilitada) {
-                consultarInformacionZombi();  // Aquí se permite la consulta de información de zombis
-            }
+          
 
             // Preguntar si el jugador desea finalizar la simulación o agregar más supervivientes
             System.out.println("¿Deseas finalizar la simulación (s), agregar un nuevo superviviente (a) o continuar (n)?");
@@ -1581,13 +1633,28 @@ if (respuesta.equals("a")) {
                 // Mostrar el tablero después de agregar el nuevo superviviente
                  tablero.asignarSupervivientesAlTablero(supervivientesConCoordenadas2);
                // tablero.mostrarTableroSimulacion(tamaño); // Mostrar el tablero actualizado
-            } else {
-                System.out.println("No se seleccionó un nuevo superviviente.");
-            }
+            } else if (respuesta.equals("n")) {
+    // Continuar con el próximo turno sin hacer nada adicional.
+    System.out.println("Continuando con el siguiente turno...");
+    // Solo aumentar el turno y continuar el bucle sin interrumpir el juego.
+    turno++;
+}
 
-            // Incrementar turno
-            turno++;
-        }
+            
+            
+        
+                        break;
+
+                    default: // Opción inválida
+                        System.out.println("Opción inválida. Por favor, elige una opción válida.");
+                }
+            } else {
+                System.out.println("Entrada inválida. Por favor, elige un número entre 1 y 3.");
+                scanner.nextLine(); // Limpiar el buffer en caso de entrada no válida
+            }
+         // Aquí se permite la consulta de información de zombis
+         
+    }
     }
 
     private static void mostrarEstadisticas(Scanner scanner) {

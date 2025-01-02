@@ -286,6 +286,7 @@ public class Zombi implements Activable, Serializable {
 
                 System.out.println("El zombi " + id + " se movió de " + posicionAnterior + " a " + this.posicion + 
                                    " hacia el superviviente más cercano: " + objetivo.getNombre());
+                tablero.mostrarTablero();
             } else {
                 System.out.println("El zombi no puede moverse a una posición ocupada o fuera del tablero.");
                 break;
