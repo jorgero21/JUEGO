@@ -170,7 +170,7 @@ public class Juego implements Serializable{
         return seleccionados;
     }
 
-    public void iniciarMenuPrincipal() throws IOException {
+    public void iniciarMenuPrincipal() throws IOException, ClassNotFoundException {
         Scanner scanner = new Scanner(System.in);
         boolean salir = false;
 
@@ -195,7 +195,8 @@ public class Juego implements Serializable{
                         break;
                     case 2:
                         if (cargarEstadoConNombreCarga()) {
-                            continuarJuego();
+                           //continuarJuego();
+                            System.out.println("Se pudo cargar el juego.");
                         } else {
                             System.out.println("No se pudo cargar el juego.");
                         }
@@ -727,13 +728,13 @@ public String getNombrePartida() {
     /**
      *
      */
-    public void continuarJuego() throws IOException {
+    public void continuarJuego( String nombrePartida ) throws IOException {
          Scanner scanner = new Scanner(System.in);
       
         enJuego=true;
           activarConsulta();
-        System.out.println("Introduce el nombre de la partida: ");
-        String nombrePartida = scanner.nextLine().trim();
+        //System.out.println("Introduce el nombre de la partida: ");
+        //String nombrePartida = scanner.nextLine().trim();
 
         if (nombrePartida.isEmpty()) {
             nombrePartida = "Default";
@@ -1657,7 +1658,7 @@ while (true) {
     }
     }
 
-    private static void mostrarEstadisticas(Scanner scanner) {
+    private static void mostrarEstadisticas(Scanner scanner) throws ClassNotFoundException, IOException {
         System.out.println("Elige qué deseas visualizar:");
         System.out.println("1. Zombis eliminados");
         System.out.println("2. Supervivientes heridos");
@@ -1711,7 +1712,7 @@ while (true) {
             Juego miJuego = new Juego();
 
             // Cargar el estado del juego
-            if (miJuego.cargarEstadoConNombre()) {
+            if (miJuego.cargarEstadoConNombreCarga()) {
                 System.out.println("Introduce el nombre del superviviente para ver sus estadísticas:");
                // Limpiar el buffer antes de usar nextLine()
                 String nombreSuperviviente = scanner.nextLine().trim();
@@ -1821,7 +1822,7 @@ while (true) {
             Juego miJuego = new Juego();
 
             // Intentar cargar el estado de la partida
-            if (miJuego.cargarEstadoConNombre()) {
+            if (miJuego.cargarEstadoConNombreCarga()) {
                 System.out.println("Estado del juego cargado correctamente.");
 
                 // Ahora que el juego está cargado, puedes acceder al almacén de ataques
@@ -2230,18 +2231,22 @@ while (true) {
 
     }
     
-    public void listarArchivosGuardados() {
-           File carpeta = new File(DIRECTORIO_GUARDADO);
-           File[] archivos = carpeta.listFiles((dir, name) -> name.endsWith(".dat"));
-           if (archivos != null && archivos.length > 0) {
-               System.out.println("Archivos disponibles para cargar:");
-               for (int i = 0; i < archivos.length; i++) {
-                   System.out.println((i + 1) + ". " + archivos[i].getName());
-               }
-           } else {
-               System.out.println("No hay archivos disponibles para cargar.");
-           }
-       }
+   public void listarArchivosGuardados() {
+    File carpeta = new File(DIRECTORIO_GUARDADO);
+    
+    // Filtrar solo los archivos que terminan con .dat y que no contienen el sufijo '_ataques'
+    File[] archivos = carpeta.listFiles((dir, name) -> name.toLowerCase().endsWith(".dat") && !name.contains("_ataques"));
+    
+    if (archivos != null && archivos.length > 0) {
+        System.out.println("Archivos disponibles para cargar:");
+        for (int i = 0; i < archivos.length; i++) {
+            System.out.println((i + 1) + ". " + archivos[i].getName());
+        }
+    } else {
+        System.out.println("No hay archivos disponibles para cargar.");
+    }
+}
+
 
     public void guardarZombi(Zombi zombi, String archivo) throws IOException {
         // Verificar si la carpeta existe y crearla si no
@@ -2576,76 +2581,8 @@ try {
     return true;  // Retornar true si el juego y el almacén se cargaron correctamente
 }*/
 
-    public boolean cargarEstadoConNombre() {
-        // Listar los archivos disponibles
-        listarArchivosGuardados();
-
-        // Solicitar el nombre del archivo
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Introduce el nombre del archivo que deseas cargar (sin incluir '_ataques.dat'):");
-        String nombreArchivo = scanner.nextLine().trim();
-
-        // Asegurar la extensión
-        if (!nombreArchivo.endsWith(".dat")) {
-            nombreArchivo += ".dat";
-        }
-
-        // Rutas completas para el juego y el almacén de ataques
-        String rutaCompletaJuego = DIRECTORIO_GUARDADO + File.separator + nombreArchivo;
-        String rutaCompletaAtaques = DIRECTORIO_GUARDADO + File.separator + nombreArchivo.replace(".dat", "_ataques.dat");
-
-        // Intentar cargar el juego
-        try {
-            Object obj = cargarJuego(rutaCompletaJuego);
-
-            // Validar que sea un objeto de tipo Juego
-            if (!(obj instanceof Juego)) {
-                throw new ClassCastException("El archivo no contiene un objeto de tipo Juego.");
-            }
-
-            Juego estadoCargado = (Juego) obj;
-
-            // Restaurar el estado del juego
-            this.supervivientesSeleccionados = estadoCargado.getSupervivientesSeleccionados();
-            this.zombis = estadoCargado.zombis;
-            this.tablero = estadoCargado.tablero;
-            this.turno = estadoCargado.turno;
-            this.enJuego = estadoCargado.enJuego;
-
-            System.out.println("Juego cargado con éxito desde: " + rutaCompletaJuego);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("Error al cargar el archivo del juego: " + e.getMessage());
-            return false;
-        }
-
-        // Intentar cargar la lista de ataques
-        try {
-            List<Ataque> listaDeAtaques = cargarListaAtaques(rutaCompletaAtaques);
-            System.out.println("Lista de ataques cargada correctamente desde: " + rutaCompletaAtaques);
-            System.out.println("Número de ataques cargados: " + listaDeAtaques.size());
-
-            // Asignar la lista de ataques cargada al objeto correspondiente
-            ataque.setAtaques2(listaDeAtaques);
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("Error al cargar la lista de ataques. Se usará una lista vacía.");
-        }
-      /*  // Intentar cargar el almacén de ataques
-        try {
-            ataque = cargarAlmacenAtaques(rutaCompletaAtaques);
-            System.out.println("Almacén de ataques cargado correctamente desde: " + rutaCompletaAtaques);
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("Error al cargar el almacén de ataques. Se usará un almacén vacío.");
-            ataque = new AlmacenAtaques(); // Inicializar un almacén vacío si hay error
-        }
-    */
-        return true; // Ambas cargas completadas (juego y almacén)
-    }
-    
-     public boolean cargarEstadoConNombreCarga() throws IOException {
+   
+  /*   public boolean cargarEstadoConNombreCarga() throws IOException {
         // Listar los archivos disponibles
         listarArchivosGuardados();
 
@@ -2718,10 +2655,85 @@ try {
             System.out.println("Error al cargar el almacén de ataques. Se usará un almacén vacío.");
             ataque = new AlmacenAtaques(); // Inicializar un almacén vacío si hay error
         }
-    */  
+   
         continuarJuego();
         return true; // Ambas cargas completadas (juego y almacén)
+    } */  
+
+   public boolean cargarEstadoConNombreCarga() throws IOException, ClassNotFoundException, ClassCastException {
+    // Listar los archivos disponibles
+    listarArchivosGuardados();
+
+    // Solicitar el número del archivo
+    Scanner scanner = new Scanner(System.in);
+    System.out.println("Introduce el número del archivo que deseas cargar:");
+    int opcion = scanner.nextInt();
+
+    // Listar los archivos disponibles
+    File carpeta = new File(DIRECTORIO_GUARDADO);
+    File[] archivos = carpeta.listFiles((dir, name) -> name.endsWith(".dat"));
+
+    // Verificar que la opción esté dentro del rango
+    if (opcion <= 0 || opcion > archivos.length) {
+        System.out.println("Opción no válida. Por favor, elige un número dentro del rango.");
+        return false;
     }
+
+    // Obtener el nombre del archivo seleccionado
+    String nombreArchivo = archivos[opcion - 1].getName();
+    // Asegurar que el archivo tenga la extensión correcta
+    if (!nombreArchivo.endsWith(".dat")) {
+        nombreArchivo += ".dat";
+    }
+
+    // Guardar el nombre de la partida automáticamente para usarlo en continuarJuego
+    String nombrePartida = nombreArchivo.replace(".dat", "");  // Eliminar la extensión .dat
+
+    // Rutas completas para el juego y el almacén de ataques
+    String rutaCompletaJuego = DIRECTORIO_GUARDADO + File.separator + nombreArchivo;
+    String rutaCompletaAtaques = DIRECTORIO_GUARDADO + File.separator + nombreArchivo.replace(".dat", "_ataques.dat");
+
+    // Intentar cargar el juego
+    Object obj = cargarJuego(rutaCompletaJuego);
+
+    // Verificar si el archivo cargado es del tipo Juego
+    if (obj == null) {
+        System.out.println("El archivo está vacío o no se pudo leer.");
+        return false;
+    }
+
+    // Validar que el objeto cargado sea del tipo Juego
+    if (!(obj instanceof Juego)) {
+        System.out.println("El archivo no contiene un objeto de tipo 'Juego'. Tipo encontrado: " + obj.getClass().getName());
+        return false;
+    }
+
+    Juego estadoCargado = (Juego) obj;
+
+    // Restaurar el estado del juego
+    this.supervivientesSeleccionados = estadoCargado.getSupervivientesSeleccionados();
+    this.zombis = estadoCargado.zombis;
+    this.tablero = estadoCargado.tablero;
+    this.turno = estadoCargado.turno;
+    this.enJuego = estadoCargado.enJuego;
+
+    System.out.println("Juego cargado con éxito desde: " + rutaCompletaJuego);
+
+    // Intentar cargar la lista de ataques
+    List<Ataque> listaDeAtaques = cargarListaAtaques(rutaCompletaAtaques);
+    System.out.println("Lista de ataques cargada correctamente desde: " + rutaCompletaAtaques);
+    System.out.println("Número de ataques cargados: " + listaDeAtaques.size());
+
+    // Asignar la lista de ataques cargada al objeto correspondiente
+    ataque.setAtaques2(listaDeAtaques);
+
+    // Llamar a continuarJuego pasando el nombre de la partida cargada
+    continuarJuego(nombrePartida);  // Pasa el nombrePartida sin pedirlo al usuario
+    return true; // Ambas cargas completadas (juego y almacén)
+}
+
+
+
 
 
     public AlmacenAtaques cargarAlmacenAtaques(String ruta) {

@@ -13,7 +13,7 @@ import java.util.Scanner;
  * @author Jorge
  */
 public class PruebaSoloMovimientoBuscar {
-    public static void main(String[] args) throws ParseException, IOException {
+    public static void main(String[] args) throws ParseException, IOException, ClassNotFoundException {
     Juego juego = new Juego();  // Crear una instancia del juego
     
     // Preguntar al usuario si desea cargar un juego guardado
@@ -25,7 +25,7 @@ public class PruebaSoloMovimientoBuscar {
     if (respuesta.equals("S")) {
         // Intentar cargar el estado guardado automáticamente
         boolean archivoCargado = juego.cargarEstadoConNombreCarga();
-        juego.continuarJuego();
+        //juego.continuarJuego();
                    
         if (!archivoCargado) {
             // Si no se puede cargar, mostrar un mensaje y continuar con el flujo
