@@ -1,10 +1,10 @@
 package a.poo.calipsis.zombi;
 
+import java.util.List;
+
 public interface Activable {
-    //EN SUPERVIVIENTE SI, EN ZOMBI NO LO TENGO IGUAL POR PARAMETROS
-    void moverse();        
-    //NO HACE NADA
-    void atacar();         
+    void moverse(Zombi zombi, List<Superviviente> supervivientes, Tablero tablero);        
+    void atacar(Tablero tablero, AlmacenAtaques almacen, String rutaAlmacenAtaques,Superviviente objetivo);         
     Coordenada getCoordenadas();
 }
 

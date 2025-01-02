@@ -20,6 +20,8 @@ public class Zombi implements Activable, Serializable {
     Tablero tablero;
     Juego juego;
     private Map<Superviviente, Set<TipoDeHerida>> supervivientesHeridos;
+    AlmacenAtaques almacen = new AlmacenAtaques(); // Crea la instancia de AlmacenAtaques
+    String rutaAlmacenAtaques = "ruta/a/almacen"; // Establece la ruta
    
     public Zombi(int id, TipoZombi tipo, boolean esNormal, boolean esBerserker, boolean esToxico,Coordenada posicion) {
         this.id = id++;
@@ -151,8 +153,8 @@ public class Zombi implements Activable, Serializable {
     public void actualizarListaSupervivientes(List<Superviviente> supervivientes) {
         supervivientes.removeIf(s -> !s.isVivo()); // Elimina supervivientes no vivos
     }
-
-    public void acercarseAlSuperviviente(Zombi zombi, List<Superviviente> supervivientes, Tablero tablero) {
+    @Override
+    public void moverse(Zombi zombi, List<Superviviente> supervivientes, Tablero tablero) {
         
 
         int activaciones = zombi.getActivaciones(); // Número de activaciones que el zombi puede realizar en un turno
@@ -186,7 +188,7 @@ public class Zombi implements Activable, Serializable {
             if (this.posicion.equals(posicionSuperviviente)) {
                 
                 System.out.println("El zombi " + id + " está en la misma casilla que el superviviente " + objetivo.getNombre());
-                morderSuperviviente(objetivo); // Consume una activación al atacar
+                atacar(tablero, almacen,rutaAlmacenAtaques,objetivo); // Consume una activación al atacar
               
                 activaciones--; // Reducir el número de activaciones restantes
                 tablero.mostrarTablero();
@@ -219,7 +221,7 @@ public class Zombi implements Activable, Serializable {
             activaciones--; // Reducir el número de activaciones restantes por el movimiento
         }
     }
-     
+    
     public void acercarseAlSupervivienteSimulacion(Zombi zombi, List<Superviviente> supervivientes, Tablero tablero) {
         if (supervivientes.isEmpty()) {
             System.out.println("No hay supervivientes para perseguir.");
@@ -259,7 +261,7 @@ public class Zombi implements Activable, Serializable {
             if (this.posicion.equals(posicionSuperviviente)) {
                 
                 System.out.println("El zombi " + id + " está en la misma casilla que el superviviente " + objetivo.getNombre());
-                morderSuperviviente(objetivo); // Consume una activación al atacar
+                atacar(tablero, almacen,rutaAlmacenAtaques,objetivo); // Consume una activación al atacar
               
                 activaciones--; // Reducir el número de activaciones restantes
                 tablero.mostrarTablero();
@@ -292,23 +294,19 @@ public class Zombi implements Activable, Serializable {
             activaciones--; // Reducir el número de activaciones restantes por el movimiento
         }
     }
-
+   
     // Método para atacar al superviviente
-    private void morderSuperviviente(Superviviente objetivo) {
+    public void atacar(Tablero tablero, AlmacenAtaques almacen, String rutaAlmacenAtaques,Superviviente objetivo) {
         System.out.println("El zombi " + id + " ha mordido al superviviente " + objetivo.getNombre());
         objetivo.recibirMordedura(this);
          // Después de que el superviviente reciba la herida y potencialmente muera, se verifica el fin del juego
     }
 
-    @Override
+    
     public void moverse() {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
-    @Override
-    public void atacar() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
 
     @Override
     public Coordenada getCoordenadas() {

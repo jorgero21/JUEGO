@@ -4,7 +4,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.List;
-
+//CLASE PARA VER SI IBAN CIERTAS COSAS
 public class LeerAlmacenAtaques {
 
     public static void main(String[] args) {

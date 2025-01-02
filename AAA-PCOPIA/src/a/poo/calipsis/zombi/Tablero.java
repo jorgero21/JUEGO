@@ -27,6 +27,7 @@ public class Tablero implements Serializable{
         this.tablero = new Casilla[tamaño][tamaño];
         this.supervivientes = new ArrayList<>();
         this.zombis = new ArrayList<>();
+        //IMPORTANTE PONERLO EN 9,9 PARA EL FINAL
         this.objetivo = new Coordenada(0, 2); // Objetivo en la casilla (0,2)
 
         // Inicializar el tablero con casillas vacías

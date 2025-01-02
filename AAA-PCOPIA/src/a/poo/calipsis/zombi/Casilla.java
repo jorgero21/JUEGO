@@ -24,7 +24,7 @@ public class Casilla implements Activable, Serializable{
         this.explorada = false; // Por defecto, la casilla no ha sido explorada
         this.tablero = tablero;
         this.supervivientes = new ArrayList<>();
-           this.zombis = new ArrayList<>();
+        this.zombis = new ArrayList<>();
         this.entidades = new ArrayList<>();
         this.fueBuscada = false;
     }
@@ -88,14 +88,14 @@ public class Casilla implements Activable, Serializable{
 
     // Implementación del método moverse()
     @Override
-    public void moverse() {
+    public void moverse(Zombi zombi, List<Superviviente> supervivientes, Tablero tablero) {
         System.out.println("Moviendo algo en la casilla " + posicion);
         // Lógica del movimiento (puede ser específica del juego)
     }
 
     // Implementación del método atacar()
     @Override
-    public void atacar() {
+    public void atacar(Tablero tablero, AlmacenAtaques almacen, String rutaAlmacenAtaques,Superviviente objetivo) {
         System.out.println("Atacando algo en la casilla " + posicion);
         // Lógica del ataque (puede ser específica del juego)
     }

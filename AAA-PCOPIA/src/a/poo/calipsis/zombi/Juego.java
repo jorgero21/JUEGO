@@ -35,6 +35,7 @@ public class Juego implements Serializable{
     private String archivo = "src/estado_partida.txt"; 
     private static List<Zombi> zombisCargados = new ArrayList<>();
     Superviviente s;
+    Zombi zo;
     private List<Superviviente> supervivientesSeleccionados; 
     private List<Zombi> zombisEliminados = new ArrayList<>();
     private boolean enJuego;
@@ -248,7 +249,7 @@ public class Juego implements Serializable{
                 switch (accion.toLowerCase()) {
                     case "moverse":
 
-                        superviviente.moverse();
+                        superviviente.moverse(zo,supervivientesSeleccionados,tablero);
 
                         break;
 
@@ -260,7 +261,7 @@ public class Juego implements Serializable{
 
             case "atacar":
                // Suponiendo que tienes las variables necesarias inicializadas
-            superviviente.atacar(tablero, ataque,rutaAlmacenAtaques);
+            superviviente.atacar(tablero, ataque,rutaAlmacenAtaques,superviviente);
 
             break;
                case "elegir arma":
@@ -320,7 +321,7 @@ public class Juego implements Serializable{
 
             switch (accion.toLowerCase()) {
                 case "moverse":
-                    superviviente.moverse();
+                    superviviente.moverse(zo,supervivientesSeleccionados,tablero);
                     break;
 
                 case "buscar":
@@ -390,7 +391,8 @@ public class Juego implements Serializable{
 
                 switch (accion.toLowerCase()) {
                     case "moverse":
-                        superviviente.moverse();
+                        //Zombi zombi, List<Superviviente> supervivientes, Tablero tablero
+                        superviviente.moverse(zo,supervivientesSeleccionados,tablero);
                         break;
 
                     case "buscar":
@@ -584,7 +586,7 @@ public class Juego implements Serializable{
                       if (!z.isVivo()) {
                             continue; // Saltar zombis eliminados
                         }else{
-                           z.acercarseAlSuperviviente(z, supervivientesSeleccionados, tablero);
+                           z.moverse(z, supervivientesSeleccionados, tablero);
                       }
                         
                 }
@@ -801,7 +803,7 @@ public String getNombrePartida() {
                       if (!z.isVivo()) {
                             continue; // Saltar zombis eliminados
                         }else{
-                           z.acercarseAlSuperviviente(z, supervivientesSeleccionados, tablero);
+                           z.moverse(z, supervivientesSeleccionados, tablero);
                       }
                         System.out.println("\n");
                         System.out.println("Estado del tablero:");

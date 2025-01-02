@@ -232,7 +232,7 @@ public class Superviviente implements Activable, Serializable {
     
     */
     @Override
-    public void moverse() {
+    public void moverse(Zombi zombi, List<Superviviente> supervivientes, Tablero tablero) {
     if (this.tablero == null) { // Validar que el tablero no sea null
         System.out.println("Error: El tablero no está asociado al superviviente.");
         return;
@@ -296,7 +296,7 @@ public class Superviviente implements Activable, Serializable {
 }
 
      // ESTO NO HACE NADA, RETOCAR
-    @Override
+    
     public void atacar() {
         if (!armasActivas.isEmpty()) {
             System.out.println(nombre + " está atacando con " + armasActivas.get(0).getNombre());
@@ -304,8 +304,10 @@ public class Superviviente implements Activable, Serializable {
             System.out.println(nombre + " no tiene un arma equipada.");
         }
     }
-    
-public void atacar(Tablero tablero, AlmacenAtaques almacen, String rutaAlmacenAtaques) throws IOException {
+
+  
+    @Override
+    public void atacar(Tablero tablero, AlmacenAtaques almacen, String rutaAlmacenAtaques, Superviviente objetivo)  {
     if (armasActivas.isEmpty()) {
         System.out.println("No tienes armas activas. Usa el comando 'elegirArmaActiva' para activar una.");
         return;
