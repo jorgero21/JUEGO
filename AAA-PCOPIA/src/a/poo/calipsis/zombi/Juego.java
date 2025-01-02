@@ -23,7 +23,7 @@ import java.util.Scanner;
 import java.util.Set;
 
 public class Juego implements Serializable{
-    
+
     private static final int TAMANO_TABLERO = 10;
     private Tablero tablero;
     private List<Superviviente> supervivientes;
@@ -46,8 +46,6 @@ public class Juego implements Serializable{
     private String rutaAlmacenAtaques; // Variable para almacenar la ruta del archivo de ataques
     private String nombrePartida; // Para almacenar el nombre del archivo actual
 
-
-    
     public Juego() {
         this.supervivientes = new ArrayList<>(); // Inicializa la lista de supervivientes
         this.enJuego = true; // Inicia el juego como activo
@@ -75,7 +73,7 @@ public class Juego implements Serializable{
     List<Superviviente> seleccionados = new ArrayList<>();
     Scanner scanner = new Scanner(System.in);
 
-    System.out.println("Selecciona hasta 2 supervivientes:");
+    System.out.println("Selecciona hasta 4 supervivientes:");
 
     // Mostrar la lista de todos los supervivientes
     for (int i = 0; i < todosSupervivientes.size(); i++) {
@@ -83,7 +81,7 @@ public class Juego implements Serializable{
     }
 
     // Permitir la selección de hasta 2 supervivientes
-    while (seleccionados.size() < 4) {
+    while (seleccionados.size() < 2) {
         System.out.print("Introduce el numero del superviviente que deseas seleccionar (o 0 para terminar): ");
 
         // Verificar que la entrada es un número entero
@@ -603,6 +601,30 @@ public class Juego implements Serializable{
 
             // Evaluar si el juego ha terminado después de que los zombis hayan hecho su acción
             comprobarFinDeJuego(supervivientesSeleccionados);
+             if (!enJuego) { // Si el juego ha terminado, salimos del bucle
+                     for (Superviviente s : supervivientesSeleccionados) {
+                         //s.guardarEnArchivo();
+                         s.guardarHistorico();
+                         s.guardarActual();
+                    }
+                        
+
+                    for (Zombi zombi : zombis) {
+                        // Guarda cada zombi con su nombre basado en su ID
+                        String nombreArchivo = "src/zombi/zombi" + zombi.getId() + ".dat";  // Crea el nombre del archivo con el ID del zombi
+                        try {
+                            guardarZombi(zombi, nombreArchivo);  // Llama a la función de guardar
+                            System.out.println("Zombi con ID " + zombi.getId() + " guardado en el archivo " + nombreArchivo);
+                        } catch (IOException e) {
+                            System.out.println("Error al guardar el zombi con ID " + zombi.getId() + ": " + e.getMessage());
+                        }
+                    }
+                     guardarContadorZombis();
+                     guardarEstadoConNombre(nombrePartida);
+                        System.out.println("El juego ha finalizado. Regresando al menú principal...");
+                        
+                        return;
+                    }
 
             // Si el juego no ha terminado, avanzamos al siguiente turno
            // Al final del turno, incrementa el contador global
@@ -792,6 +814,27 @@ public String getNombrePartida() {
             System.out.println("Fin del turno " + turno);
              // Evaluar si el juego ha terminado después de que los zombis hayan hecho su acción
             comprobarFinDeJuego(supervivientesSeleccionados);
+             if (!enJuego) { // Si el juego ha terminado, salimos del bucle
+                     for (Superviviente s : supervivientesSeleccionados) {
+                        // s.guardarEnArchivo();
+                         s.guardarHistorico();
+                         s.guardarActual();
+                    }
+                    for (Zombi zombi : zombis) {
+                        // Guarda cada zombi con su nombre basado en su ID
+                        String nombreArchivo = "src/zombi/zombi" + zombi.getId() + ".dat";  // Crea el nombre del archivo con el ID del zombi
+                        try {
+                            guardarZombi(zombi, nombreArchivo);  // Llama a la función de guardar
+                            System.out.println("Zombi con ID " + zombi.getId() + " guardado en el archivo " + nombreArchivo);
+                        } catch (IOException e) {
+                            System.out.println("Error al guardar el zombi con ID " + zombi.getId() + ": " + e.getMessage());
+                        }
+                    }
+                     guardarContadorZombis();
+                      guardarEstadoConNombre(nombrePartida);
+                        System.out.println("El juego ha finalizado. Regresando al menú principal...");
+                        return;
+                    }
 
             // Incrementar el turno global
             this.turno++;
