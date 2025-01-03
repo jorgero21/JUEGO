@@ -16,7 +16,6 @@ public class Inventario implements Serializable{
     private Set<Provisiones> provisiones;
     private Set<Equipo> equipo;
 
-    // Constructor
     public Inventario() {
         this.armas = new HashSet<>();
         this.provisiones = new HashSet<>();
@@ -25,22 +24,18 @@ public class Inventario implements Serializable{
 
     public Set<Equipo> getEquipos() {
            Set<Equipo> todosLosEquipos = new HashSet<>();
-           todosLosEquipos.addAll(armas);       // Añadir todas las armas
-           todosLosEquipos.addAll(provisiones); // Añadir todas las provisiones
+           todosLosEquipos.addAll(armas);      
+           todosLosEquipos.addAll(provisiones); 
            return todosLosEquipos;
     }
   
-    public Set<Provisiones> getProvisiones() {
-        return provisiones;
-    }
+    public Set<Provisiones> getProvisiones() {  return provisiones;  }
     
-    public Set<Arma> getArmas() {
-        return armas;
-    }
+    public Set<Arma> getArmas() { return armas; }
    
     public void listarArmas() {
         if (armas.isEmpty()) {
-            System.out.println("No hay armas en el inventario.");
+            System.out.println("No hay armas en el inventario");
             return;
         }
         System.out.println("Armas disponibles:");
@@ -51,7 +46,7 @@ public class Inventario implements Serializable{
 
     public void listarProvisiones() {
         if (provisiones.isEmpty()) {
-            System.out.println("No hay provisiones en el inventario.");
+            System.out.println("No hay provisiones en el inventario");
             return;
         }
         System.out.println("Provisiones disponibles:");
@@ -62,26 +57,24 @@ public class Inventario implements Serializable{
 
     public void agregarArma(Arma nuevaArma) {
         armas.add(nuevaArma);
-        System.out.println(nuevaArma.getNombre() + " se ha agregado al inventario.");
+        System.out.println(nuevaArma.getNombre() + " se ha agregado al inventario");
     }
 
     public void agregarProvision(Provisiones nuevaProvision) {
         provisiones.add(nuevaProvision);
-        System.out.println(nuevaProvision.getNombre() + " se ha agregado al inventario.");
+        System.out.println(nuevaProvision.getNombre() + " se ha agregado al inventario");
     }
      
     public void cargarDesdeFichero(String nombreFichero) throws IOException {
         try (BufferedReader br = new BufferedReader(new FileReader(nombreFichero))) {
             String linea;
-            // Usamos el formato de fecha
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
             while ((linea = br.readLine()) != null) {
                 String[] partes = linea.split(",");
-                String tipo = partes[0].trim(); // Primero identificamos el tipo (Arma o Provisión)
+                String tipo = partes[0].trim(); 
 
                 if (tipo.equalsIgnoreCase("Arma")) {
-                    // Cargar un arma
                     String nombre = partes[1].trim();
                     int daño = Integer.parseInt(partes[2].trim());
                     int alcance = Integer.parseInt(partes[3].trim());
@@ -91,11 +84,10 @@ public class Inventario implements Serializable{
                     armas.add(arma);
                     System.out.println("Arma cargada: " + nombre);
                 } else if (tipo.equalsIgnoreCase("Provision")) {
-                    // Cargar una provisión
                     String nombre = partes[1].trim();
                     int cantidad = Integer.parseInt(partes[2].trim());
-                    String fechaStr = partes[3].trim(); // Suponiendo que la fecha está en el cuarto campo
-                    LocalDate fecha = LocalDate.parse(fechaStr, formatter); // Convertimos la fecha a LocalDate
+                    String fechaStr = partes[3].trim(); 
+                    LocalDate fecha = LocalDate.parse(fechaStr, formatter); 
                     Provisiones provision = new Provisiones(nombre, cantidad, fecha);
                     provisiones.add(provision);
                     System.out.println("Provision cargada: " + nombre);
@@ -109,10 +101,9 @@ public class Inventario implements Serializable{
 
     public void guardarEnFichero(String nombreFichero) {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(nombreFichero))) {
-            // Guardar armas
             for (Arma arma : armas) {
                 String linea = String.join(",", 
-                    "Arma", // Tipo de item
+                    "Arma", 
                     arma.getNombre(), 
                     String.valueOf(arma.getPotencia()), 
                     String.valueOf(arma.getAlcance()),
@@ -121,12 +112,10 @@ public class Inventario implements Serializable{
                 bw.write(linea);
                 bw.newLine();
             }
-
-            // Guardar provisiones
             for (Provisiones provision : provisiones) {
                 String fechaCaducidad = provision.getCaducidad().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
                 String linea = String.join(",", 
-                    "Provisión", // Tipo de item
+                    "Provisión", 
                     provision.getNombre(), 
                     String.valueOf(provision.getValorEnergetico()), 
                     fechaCaducidad);
@@ -139,5 +128,4 @@ public class Inventario implements Serializable{
             System.err.println("Error al guardar el inventario: " + e.getMessage());
         }
     }
-    
 }

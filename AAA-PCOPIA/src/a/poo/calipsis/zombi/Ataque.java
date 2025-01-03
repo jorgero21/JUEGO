@@ -9,8 +9,8 @@ import java.util.Arrays;
 import java.util.Random;
 
 public class Ataque implements Serializable{
-    private int[] dados;      // Resultados de los lanzamientos de dados
-    private String resultado; // Resumen del ataque
+    private int[] dados;      
+    private String resultado; 
 
     public Ataque(int numDados) {
         this.dados = new int[numDados];
@@ -28,18 +28,16 @@ public class Ataque implements Serializable{
     public int lanzarDados(int valorExito) {
         Random random = new Random();
         int exitos = 0;
-
         System.out.println("Lanzando " + dados.length + " dados...");
 
         for (int i = 0; i < dados.length; i++) {
-            dados[i] = random.nextInt(6) + 1; // Resultado de un dado (1-6)
+            dados[i] = random.nextInt(6) + 1; 
             System.out.println("Resultado del dado " + (i + 1) + ": " + dados[i]);
 
             if (dados[i] >= valorExito) {
                 exitos++;
             }
         }
-
         resultado = "Se obtuvo " + exitos + " exitos";
         System.out.println(resultado);
         return exitos;
@@ -47,8 +45,6 @@ public class Ataque implements Serializable{
     
     @Override 
     public String toString() { 
-        return "Ataque:\n" +
-           "Dados lanzados: " + Arrays.toString(dados) + "\n" +
-           "Resultado: Se obtuvieron " + resultado + " éxitos\n";
+        return "Ataque:\n" +"Dados lanzados: " + Arrays.toString(dados) + "\n" +"Resultado: Se obtuvieron " + resultado + " exitos\n";
 }
     }

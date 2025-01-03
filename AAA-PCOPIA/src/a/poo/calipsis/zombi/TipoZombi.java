@@ -13,7 +13,6 @@ public enum TipoZombi {
     private final int aguante;
     private int activaciones;
 
-    // Constructor del enum
     TipoZombi(int aguante, int activaciones) {
         this.aguante = aguante;
         this.activaciones = activaciones;
