@@ -11,7 +11,7 @@ import java.util.Random;
 public class Ataque implements Serializable{
     private int[] dados;      
     private String resultado; 
-
+    
     public Ataque(int numDados) {
         this.dados = new int[numDados];
         this.resultado = "";

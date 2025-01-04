@@ -25,13 +25,10 @@ public class Main {
             juego.iniciarMenuPrincipal();
         } catch (IOException e) {
             System.err.println("Ocurrió un error de entrada/salida: " + e.getMessage());
-            e.printStackTrace();
         } catch (ClassNotFoundException e) {
             System.err.println("No se encontró la clase necesaria: " + e.getMessage());
-            e.printStackTrace();
-        } catch (Exception e) {
+        } catch (ClassCastException e) {
             System.err.println("Ocurrió un error inesperado: " + e.getMessage());
-            e.printStackTrace();
         }
     }
 }

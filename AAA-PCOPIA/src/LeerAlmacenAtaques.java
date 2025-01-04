@@ -1,4 +1,4 @@
-import a.poo.calipsis.zombi.AlmacenAtaques;
+/*import a.poo.calipsis.zombi.AlmacenAtaques;
 import a.poo.calipsis.zombi.Ataque;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -35,3 +35,4 @@ public class LeerAlmacenAtaques {
         }
     }
 }
+*/

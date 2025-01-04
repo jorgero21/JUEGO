@@ -1,6 +1,7 @@
 package a.poo.calipsis.zombi;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 public class Provisiones extends Equipo {
     private int valorEnergetico;
@@ -26,6 +27,10 @@ public class Provisiones extends Equipo {
         if (obj == null || getClass() != obj.getClass()) return false;
         Provisiones that = (Provisiones) obj;
         return getNombre().equalsIgnoreCase(that.getNombre()); // Usa getNombre() de la superclase
+    }
+    @Override
+    public int hashCode() {
+        return Objects.hash(nombre); // Asegúrate de que los atributos sean relevantes para comparar
     }
     @Override
     public String detalles() {

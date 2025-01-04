@@ -1,5 +1,7 @@
 package a.poo.calipsis.zombi;
 
+import java.util.Objects;
+
 public class Arma extends Equipo {
     private int potencia;
     private int alcance;
@@ -36,6 +38,10 @@ public class Arma extends Equipo {
         if (obj == null || getClass() != obj.getClass()) return false;
         Arma arma = (Arma) obj;
         return getNombre().equalsIgnoreCase(arma.getNombre()); 
+    }
+    @Override
+    public int hashCode() {
+        return Objects.hash(nombre); // Usar el nombre u otro atributo único
     }
     @Override
     public String detalles() {

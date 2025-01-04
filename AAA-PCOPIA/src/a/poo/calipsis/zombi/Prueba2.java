@@ -4,6 +4,8 @@
  */
 package a.poo.calipsis.zombi;
 
+import static a.poo.calipsis.zombi.Superviviente.cargarActual;
+import static a.poo.calipsis.zombi.Superviviente.cargarHistorico;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -26,10 +28,43 @@ import java.util.Set;
  */
 public class Prueba2 {
 
-   /*
+   
     public static void main(String[] args) throws ParseException, IOException, ClassNotFoundException {
-        // TODO code application logic here
+        // Cargar el histórico de zombis de un superviviente
+        /* Superviviente superviviente2 = cargarActual("rochelle");
+         for (Zombi zombi : superviviente2.getActual()) {
+            System.out.println("Zombi ID: " + zombi.getId());
+            System.out.println("Tipo: " + zombi.getTipo());
+            System.out.println("Posición: " + zombi.getPosicion());
+            System.out.println("---");
+        }
+         Superviviente superviviente = cargarHistorico("rochelle");
+        // Verificar los zombis en el histórico
+        for (Zombi zombi : superviviente.getHistorico()) {
+            System.out.println("Zombi ID: " + zombi.getId());
+            System.out.println("Tipo: " + zombi.getTipo());
+            System.out.println("Posición: " + zombi.getPosicion());
+            System.out.println("---");
+        }*/ 
+        Superviviente superviviente = cargarHistorico("rochelle");
+        // Verificar los zombis en el histórico
+        for (Zombi zombi : superviviente.getHistorico()) {
+            System.out.println("Zombi ID: " + zombi.getId());
+            System.out.println("Tipo: " + zombi.getTipo());
+            System.out.println("Posición: " + zombi.getPosicion());
+            System.out.println("---");
+        }
+        Superviviente superviviente2 = cargarActual("rochelle");
+         for (Zombi zombi : superviviente2.getActual()) {
+            System.out.println("Zombi ID: " + zombi.getId());
+            System.out.println("Tipo: " + zombi.getTipo());
+            System.out.println("Posición: " + zombi.getPosicion());
+            System.out.println("---");
+        }
         
+}
+
+        /*
        
      Inventario inventario=new Inventario();
         inventario.agregarArma(new Arma("Pistola",1,2,2,3));

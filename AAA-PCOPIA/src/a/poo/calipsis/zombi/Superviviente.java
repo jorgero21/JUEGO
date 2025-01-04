@@ -245,211 +245,111 @@ public class Superviviente implements Activable, Serializable {
             System.out.println(nombre + " se prepara para atacar");
     }
   
-    public void atacar(Tablero tablero, AlmacenAtaques almacen, String rutaAlmacenAtaques, Superviviente objetivo)  {
+   public void atacar(Tablero tablero, AlmacenAtaques almacen, String rutaAlmacenAtaques, Superviviente objetivo)  {
+    if (armasActivas.isEmpty()) {
+        System.out.println("No tienes armas activas. Usa el comando 'elegirArmaActiva' para activar una");
+        return;
+    }
 
-        if (armasActivas.isEmpty()) {
-            System.out.println("No tienes armas activas. Usa el comando 'elegirArmaActiva' para activar una");
-            return;
-        }
+    atacar();
 
-        atacar();
+    Scanner scanner = new Scanner(System.in);
+    System.out.println("Selecciona un arma activa para atacar:");
+    for (int i = 0; i < armasActivas.size(); i++) {
+        System.out.println((i + 1) + ". " + armasActivas.get(i).getNombre() +
+                           " (Alcance: " + armasActivas.get(i).getAlcance() +
+                           ", Dados: " + armasActivas.get(i).getNumeroDados() +
+                           ", Potencia: " + armasActivas.get(i).getPotencia() + ")");
+    }
 
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Selecciona un arma activa para atacar:");
-        for (int i = 0; i < armasActivas.size(); i++) {
-            System.out.println((i + 1) + ". " + armasActivas.get(i).getNombre() + 
-                               " (Alcance: " + armasActivas.get(i).getAlcance() + 
-                               ", Dados: " + armasActivas.get(i).getNumeroDados() + 
-                               ", Potencia: " + armasActivas.get(i).getPotencia() + ")");
-        }
-        int seleccion = -1;
-        while (seleccion < 1 || seleccion > armasActivas.size()) {
-            System.out.print("Ingresa el numero correspondiente al arma: ");
-            if (scanner.hasNextInt()) {
-                seleccion = scanner.nextInt();
-                if (seleccion < 1 || seleccion > armasActivas.size()) {
-                    System.out.println("Seleccion invalida. Elige un numero entre 1 y " + armasActivas.size() + ".");
-                }
-            } else {
-                System.out.println("Entrada invalida. Por favor, ingresa un numero");
-                scanner.next(); 
+    int seleccion = -1;
+    while (seleccion < 1 || seleccion > armasActivas.size()) {
+        System.out.print("Ingresa el numero correspondiente al arma: ");
+        if (scanner.hasNextInt()) {
+            seleccion = scanner.nextInt();
+            if (seleccion < 1 || seleccion > armasActivas.size()) {
+                System.out.println("Seleccion invalida. Elige un numero entre 1 y " + armasActivas.size() + ".");
             }
-        }
-        Arma armaSeleccionada = armasActivas.get(seleccion - 1);
-        Ataque ataque = new Ataque(armaSeleccionada.getNumeroDados());
-        int exitos = ataque.lanzarDados(armaSeleccionada.getValorExito()); 
-        if (exitos > 0) {
-            System.out.println("Se han obtenido " + exitos + " exitos");
-            while (exitos > 0) {
-                String decision = "";
-                while (true) {
-                    System.out.println("Deseas usar el siguiente exito para atacar? (s/n)");
-                    decision = scanner.next();
-                    if (decision.equalsIgnoreCase("s")) {
-                        System.out.println("Introduce las coordenadas de la casilla objetivo:");
-                        tablero.mostrarTablero();
-
-                        int fila = -1;
-                        while (fila < 0) {
-                            System.out.print("Fila: ");
-                            if (scanner.hasNextInt()) {
-                                fila = scanner.nextInt();
-                                if (fila < 0) {
-                                    System.out.println("Por favor, introduce un numero positivo para la fila");
-                                }
-                            } else {
-                                System.out.println("Entrada invalida. Debes ingresar un numero");
-                                scanner.next(); 
-                            }
-                        }
-
-                        int columna = -1;
-                        while (columna < 0) {
-                            System.out.print("Columna: ");
-                            if (scanner.hasNextInt()) {
-                                columna = scanner.nextInt();
-                                if (columna < 0) {
-                                    System.out.println("Por favor, introduce un numero positivo para la columna");
-                                }
-                            } else {
-                                System.out.println("Entrada invalida. Debes ingresar un numero");
-                                scanner.next(); 
-                            }
-                        }
-                        Casilla casillaObjetivo = tablero.getCasilla(fila, columna);
-                        if (casillaObjetivo == null) {
-                            System.out.println("La casilla objetivo no existe. Intenta de nuevo");
-                            continue; 
-                        }
-                        int distancia = tablero.calcularDistancia(this.coordenada, casillaObjetivo.getCoordenadas());
-                        if (armaSeleccionada.getAlcance() == 0 && distancia > 0) {
-                            System.out.println("El arma es de cuerpo a cuerpo. Debes atacar una casilla donde estes");
-                            continue; 
-                        }
-                        if (armaSeleccionada.getAlcance() > 0 && distancia > armaSeleccionada.getAlcance()) {
-                            System.out.println("La casilla esta fuera del alcance del arma");
-                            continue; 
-                        }
-                        List<Zombi> zombisEnCasilla = new ArrayList<>();
-                        for (Object entidad : casillaObjetivo.getEntidades()) {
-                            if (entidad instanceof Zombi) {
-                                zombisEnCasilla.add((Zombi) entidad);
-                            }
-                        }
-                        if (zombisEnCasilla.isEmpty()) {
-                            System.out.println("No hay zombis en la casilla seleccionada");
-                            continue; 
-                        }
-                        for (Zombi z : zombisEnCasilla) {
-                            if (z.isBerserker() && armaSeleccionada.getAlcance() > 0) {
-                                this.restarAccion();
-                                System.out.println("El zombi Berserker es inmune a ataques a distancia");
-                                exitos--; 
-                                continue;
-                            }
-                            if (z.getAguante() <= armaSeleccionada.getPotencia()) {
-                                this.restarAccion();
-                                System.out.println("El zombi " + z.getTipo() + " ha sido eliminado");
-                                agregarZombiEliminado(z);
-                                exitos--;
-                                z.setVivo(false);
-                                if (z.isToxico() && this.coordenada.equals(casillaObjetivo.getCoordenadas())) {
-                                    System.out.println("El zombi toxico te ha causado una herida al ser eliminado!");
-                                    recibirHerida(z);
-                                }
-                                casillaObjetivo.eliminarEntidad(z);
-                                tablero.mostrarTablero();
-                                agregarZombisEliminados(z);
-                                zombis_eliminados++;
-                                almacen.registrarAtaque(ataque, rutaAlmacenAtaques);
-                                System.out.println("Numero de ataques: " + almacen.getAtaques2().size());
-                            } else {
-                                System.out.println("El zombi " + z.getTipo() + " es demasiado resistente para este ataque");
-                                this.restarAccion();
-                                exitos--; 
-                            }
-                            if (exitos == 0) {
-                                break;
-                            }
-                        }
-
-                        if (exitos == 0) {
-                            System.out.println("No hay mas exitos disponibles");
-                        }
-                    }else if (decision.equalsIgnoreCase("n")) {
-                        exitos--;  
-                        System.out.println("El exito no se utilizara");
-                        break; 
-                    }else {
-                        System.out.println("Entrada invalida. Por favor, ingresa 's' para usar el exito o 'n' para no usarlo");
-                    }
-                }
-
-            }
-
         } else {
-            System.out.println("No se consiguieron exitos. El ataque ha fallado");
+            System.out.println("Entrada invalida. Por favor, ingresa un numero");
+            scanner.next(); 
         }
     }
 
-    public void atacarSimulacion(Tablero tablero, AlmacenAtaques almacen, Juego j) throws IOException {
-        if (armasActivas.isEmpty()) {
-            System.out.println("No tienes armas activas. Usa el comando 'elegirArmaActiva' para activar una");
-            return;
-        }
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Selecciona un arma activa para atacar:");
-        for (int i = 0; i < armasActivas.size(); i++) {
-            System.out.println((i + 1) + ". " + armasActivas.get(i).getNombre() + 
-                               " (Alcance: " + armasActivas.get(i).getAlcance() + 
-                               ", Dados: " + armasActivas.get(i).getNumeroDados() + 
-                               ", Potencia: " + armasActivas.get(i).getPotencia() + ")");
-        }
-        int seleccion = scanner.nextInt();
-        if (seleccion < 1 || seleccion > armasActivas.size()) {
-            System.out.println("Seleccion invalida. Ataque cancelado");
-            return;
-        }
-        Arma armaSeleccionada = armasActivas.get(seleccion - 1);
-        Ataque ataque = new Ataque(armaSeleccionada.getNumeroDados());
-        int exitos = ataque.lanzarDados(armaSeleccionada.getValorExito()); 
-        if (exitos > 0) {
-            System.out.println("Se han obtenido " + exitos + " exitos");
+    Arma armaSeleccionada = armasActivas.get(seleccion - 1);
+    Ataque ataque = new Ataque(armaSeleccionada.getNumeroDados());
+    int exitos = ataque.lanzarDados(armaSeleccionada.getValorExito()); 
 
-            while (exitos > 0) {
+    if (exitos > 0) {
+        System.out.println("Se han obtenido " + exitos + " éxitos");
+        
+        int ataquesRealizados = 0; // Contador de ataques realizados
+        while (exitos > 0) {
+            String decision = "";
+            while (true) {
                 System.out.println("Deseas usar el siguiente exito para atacar? (s/n)");
-                String decision = scanner.next();
+                decision = scanner.next();
                 if (decision.equalsIgnoreCase("s")) {
                     System.out.println("Introduce las coordenadas de la casilla objetivo:");
                     tablero.mostrarTablero();
-                    System.out.print("Fila: ");
-                    int fila = scanner.nextInt();
-                    System.out.print("Columna: ");
-                    int columna = scanner.nextInt();
+
+                    int fila = -1;
+                    while (fila < 0) {
+                        System.out.print("Fila: ");
+                        if (scanner.hasNextInt()) {
+                            fila = scanner.nextInt();
+                            if (fila < 0) {
+                                System.out.println("Por favor, introduce un numero positivo para la fila");
+                            }
+                        } else {
+                            System.out.println("Entrada invalida. Debes ingresar un numero");
+                            scanner.next(); 
+                        }
+                    }
+
+                    int columna = -1;
+                    while (columna < 0) {
+                        System.out.print("Columna: ");
+                        if (scanner.hasNextInt()) {
+                            columna = scanner.nextInt();
+                            if (columna < 0) {
+                                System.out.println("Por favor, introduce un numero positivo para la columna");
+                            }
+                        } else {
+                            System.out.println("Entrada invalida. Debes ingresar un numero");
+                            scanner.next(); 
+                        }
+                    }
+
                     Casilla casillaObjetivo = tablero.getCasilla(fila, columna);
                     if (casillaObjetivo == null) {
                         System.out.println("La casilla objetivo no existe. Intenta de nuevo");
                         continue; 
                     }
+
                     int distancia = tablero.calcularDistancia(this.coordenada, casillaObjetivo.getCoordenadas());
                     if (armaSeleccionada.getAlcance() == 0 && distancia > 0) {
                         System.out.println("El arma es de cuerpo a cuerpo. Debes atacar una casilla donde estes");
                         continue; 
                     }
                     if (armaSeleccionada.getAlcance() > 0 && distancia > armaSeleccionada.getAlcance()) {
-                        System.out.println("La casilla está fuera del alcance del arma");
+                        System.out.println("La casilla esta fuera del alcance del arma");
                         continue; 
                     }
+
                     List<Zombi> zombisEnCasilla = new ArrayList<>();
                     for (Object entidad : casillaObjetivo.getEntidades()) {
                         if (entidad instanceof Zombi) {
                             zombisEnCasilla.add((Zombi) entidad);
                         }
                     }
+
                     if (zombisEnCasilla.isEmpty()) {
                         System.out.println("No hay zombis en la casilla seleccionada");
                         continue; 
                     }
+
+                    // Procesar cada zombi en la casilla
                     for (Zombi z : zombisEnCasilla) {
                         if (z.isBerserker() && armaSeleccionada.getAlcance() > 0) {
                             this.restarAccion();
@@ -457,47 +357,182 @@ public class Superviviente implements Activable, Serializable {
                             exitos--; 
                             continue;
                         }
+
                         if (z.getAguante() <= armaSeleccionada.getPotencia()) {
                             this.restarAccion();
                             System.out.println("El zombi " + z.getTipo() + " ha sido eliminado");
                             agregarZombiEliminado(z);
                             exitos--;
                             z.setVivo(false);
+
                             if (z.isToxico() && this.coordenada.equals(casillaObjetivo.getCoordenadas())) {
                                 System.out.println("El zombi toxico te ha causado una herida al ser eliminado!");
                                 recibirHerida(z);
                             }
-                            casillaObjetivo.eliminarEntidad(z); 
+
+                            casillaObjetivo.eliminarEntidad(z);
                             tablero.mostrarTablero();
                             agregarZombisEliminados(z);
                             zombis_eliminados++;
+                            ataquesRealizados++; // Incrementar el contador de ataques realizados
+                            Ataque ataqueRealizado = new Ataque(1); // Crear un ataque individual por cada éxito usado
+                            almacen.registrarAtaque(ataqueRealizado, rutaAlmacenAtaques);
+
                         } else {
                             System.out.println("El zombi " + z.getTipo() + " es demasiado resistente para este ataque");
                             this.restarAccion();
                             exitos--; 
                         }
+
                         if (exitos == 0) {
                             break;
                         }
                     }
+
                     if (exitos == 0) {
                         System.out.println("No hay mas exitos disponibles");
                     }
 
                 } else if (decision.equalsIgnoreCase("n")) {
-                System.out.println("El exito no se utilizara");
-                exitos--; 
-                continue; 
+                    exitos--;  
+                    System.out.println("El exito no se utilizara");
+                    break; 
                 } else {
-                    System.out.println("Entrada invalida. Por favor, ingresa 's' para usar el exito o 'n' para no usarlo");
+                    System.out.println("Entrada invalida. Por favor, ingresa 's' para usar el éxito o 'n' para no usarlo");
                 }
             }
-        } else {
-            System.out.println("No se consiguieron exitos. El ataque ha fallado");
         }
-        almacen.registrarAtaque(ataque, j);
-        System.out.println("Numero de ataques: " + almacen.getAtaques().size());
+
+        System.out.println("Numero total de ataques realizados: " + ataquesRealizados);
+        System.out.println("Numero de ataques registrados en el almacen: " + almacen.getAtaques2().size());
+    } else {
+        System.out.println("No se consiguieron exitos. El ataque ha fallado");
     }
+}
+
+
+    public void atacarSimulacion(Tablero tablero, AlmacenAtaques almacen, Juego j) throws IOException {
+    if (armasActivas.isEmpty()) {
+        System.out.println("No tienes armas activas. Usa el comando 'elegirArmaActiva' para activar una");
+        return;
+    }
+
+    Scanner scanner = new Scanner(System.in);
+    System.out.println("Selecciona un arma activa para atacar:");
+    for (int i = 0; i < armasActivas.size(); i++) {
+        System.out.println((i + 1) + ". " + armasActivas.get(i).getNombre() +
+                           " (Alcance: " + armasActivas.get(i).getAlcance() +
+                           ", Dados: " + armasActivas.get(i).getNumeroDados() +
+                           ", Potencia: " + armasActivas.get(i).getPotencia() + ")");
+    }
+
+    int seleccion = scanner.nextInt();
+    if (seleccion < 1 || seleccion > armasActivas.size()) {
+        System.out.println("Seleccion invalida. Ataque cancelado");
+        return;
+    }
+
+    Arma armaSeleccionada = armasActivas.get(seleccion - 1);
+    Ataque ataque = new Ataque(armaSeleccionada.getNumeroDados());
+    int exitos = ataque.lanzarDados(armaSeleccionada.getValorExito()); 
+
+    if (exitos > 0) {
+        System.out.println("Se han obtenido " + exitos + " exitos");
+        
+        int ataquesRealizados = 0; 
+        while (exitos > 0) {
+            System.out.println("Deseas usar el siguiente exito para atacar? (s/n)");
+            String decision = scanner.next();
+            if (decision.equalsIgnoreCase("s")) {
+                System.out.println("Introduce las coordenadas de la casilla objetivo:");
+                tablero.mostrarTablero();
+                System.out.print("Fila: ");
+                int fila = scanner.nextInt();
+                System.out.print("Columna: ");
+                int columna = scanner.nextInt();
+
+                Casilla casillaObjetivo = tablero.getCasilla(fila, columna);
+                if (casillaObjetivo == null) {
+                    System.out.println("La casilla objetivo no existe. Intenta de nuevo");
+                    continue;
+                }
+
+                int distancia = tablero.calcularDistancia(this.coordenada, casillaObjetivo.getCoordenadas());
+                if (armaSeleccionada.getAlcance() == 0 && distancia > 0) {
+                    System.out.println("El arma es de cuerpo a cuerpo. Debes atacar una casilla donde estes");
+                    continue;
+                }
+                if (armaSeleccionada.getAlcance() > 0 && distancia > armaSeleccionada.getAlcance()) {
+                    System.out.println("La casilla esta fuera del alcance del arma");
+                    continue;
+                }
+
+                List<Zombi> zombisEnCasilla = new ArrayList<>();
+                for (Object entidad : casillaObjetivo.getEntidades()) {
+                    if (entidad instanceof Zombi) {
+                        zombisEnCasilla.add((Zombi) entidad);
+                    }
+                }
+                if (zombisEnCasilla.isEmpty()) {
+                    System.out.println("No hay zombis en la casilla seleccionada");
+                    continue;
+                }
+
+                for (Zombi z : zombisEnCasilla) {
+                    if (z.isBerserker() && armaSeleccionada.getAlcance() > 0) {
+                        this.restarAccion();
+                        System.out.println("El zombi Berserker es inmune a ataques a distancia");
+                        exitos--;
+                        continue;
+                    }
+
+                    if (z.getAguante() <= armaSeleccionada.getPotencia()) {
+                        this.restarAccion();
+                        System.out.println("El zombi " + z.getTipo() + " ha sido eliminado");
+                        agregarZombiEliminado(z);
+                        z.setVivo(false);
+                        exitos--;
+                        ataquesRealizados++; // Incrementar el contador de ataques realizados
+                        if (z.isToxico() && this.coordenada.equals(casillaObjetivo.getCoordenadas())) {
+                            System.out.println("El zombi toxico te ha causado una herida al ser eliminado!");
+                            recibirHerida(z);
+                        }
+                        casillaObjetivo.eliminarEntidad(z);
+                        tablero.mostrarTablero();
+                        agregarZombisEliminados(z);
+                        zombis_eliminados++;
+                    } else {
+                        System.out.println("El zombi " + z.getTipo() + " es demasiado resistente para este ataque");
+                        this.restarAccion();
+                        exitos--;
+                    }
+                    if (exitos == 0) {
+                        break;
+                    }
+                }
+
+                if (exitos == 0) {
+                    System.out.println("No hay mas exitos disponibles");
+                }
+            } else if (decision.equalsIgnoreCase("n")) {
+                System.out.println("El exito no se utilizara");
+                exitos--;
+            } else {
+                System.out.println("Entrada invalida. Por favor, ingresa 's' para usar el exito o 'n' para no usarlo");
+            }
+        }
+
+        // Registrar el ataque en el almacén con el número de ataques realizados
+        for (int i = 0; i < ataquesRealizados; i++) {
+            Ataque ataqueRealizado = new Ataque(1); // Crear un ataque individual por cada éxito usado
+            almacen.registrarAtaque(ataqueRealizado, j);
+        }
+        System.out.println("Numero total de ataques realizados: " + ataquesRealizados);
+        System.out.println("Numero de ataques registrados en el almacen: " + almacen.getAtaques().size());
+    } else {
+        System.out.println("No se consiguieron exitos. El ataque ha fallado");
+    }
+}
 
     public boolean buscarEquipo(Equipo equipo) {
         if (getAcciones() > 0){
@@ -536,10 +571,7 @@ public class Superviviente implements Activable, Serializable {
                             this.agregarEquipoEntregado(equipoAleatorio);
                             System.out.println("Has encontrado " + equipoAleatorio.getNombre() + " y lo has añadido a tu inventario!");
                             equipoValido = true;  
-                        } else {
-                            System.out.println("No puedes llevar mas equipo");
-                            equipoValido = true;  
-                        }
+                        } 
                     } else {
                         System.out.println("Ya tienes este equipo en tu inventario, buscando otro...");
                     }
@@ -553,59 +585,74 @@ public class Superviviente implements Activable, Serializable {
         this.restarAccion();
     }
     
-    public void seleccionarEquipoManualmente(Inventario almacenInventario) {
-        Scanner scanner = new Scanner(System.in);
-        Set<Equipo> equiposDisponibles = almacenInventario.getEquipos();
-        if (equiposDisponibles.isEmpty()) {
-            System.out.println("No hay equipos disponibles para seleccionar");
-            return;
-        }
-        System.out.println("Equipos disponibles para seleccionar:");
-        List<Equipo> listaEquiposDisponibles = new ArrayList<>(equiposDisponibles); 
-        for (int i = 0; i < listaEquiposDisponibles.size(); i++) {
-            Equipo equipo = listaEquiposDisponibles.get(i);
-            System.out.println((i + 1) + ". " + equipo.getNombre());
-        }
-        int maxEquipos = 5;
-        List<Equipo> seleccionados = new ArrayList<>();
-        while (seleccionados.size() < maxEquipos) {
-            System.out.println("\nSelecciona un equipo ingresando su numero (o ingresa 0 para finalizar):");
+  public void seleccionarEquipoManualmente(Inventario almacenInventario) {
+    Scanner scanner = new Scanner(System.in);
+    Set<Equipo> equiposDisponibles = almacenInventario.getEquipos();
+    if (equiposDisponibles.isEmpty()) {
+        System.out.println("No hay equipos disponibles para seleccionar");
+        return;
+    }
 
-            int opcion = -1;
-            while (true) {
-                if (scanner.hasNextInt()) {
-                    opcion = scanner.nextInt();
-                    scanner.nextLine();
-                    break;
-                } else {
-                    System.out.println("Entrada no valida. Debes ingresar un numero entero");
-                    scanner.nextLine(); 
-                }
-            }
-            if (opcion == 0) {
-                System.out.println("Has finalizado la seleccion de equipos");
+    System.out.println("Equipos disponibles para seleccionar:");
+    List<Equipo> listaEquiposDisponibles = new ArrayList<>(equiposDisponibles); 
+    for (int i = 0; i < listaEquiposDisponibles.size(); i++) {
+        Equipo equipo = listaEquiposDisponibles.get(i);
+        System.out.println((i + 1) + ". " + equipo.getNombre());
+    }
+
+    int maxEquipos = 5;
+    while (inventario.size() < maxEquipos) {
+        System.out.println("\nSelecciona un equipo ingresando su numero (o ingresa 0 para finalizar):");
+        int opcion = -1;
+
+        // Validar entrada del usuario
+        while (true) {
+            if (scanner.hasNextInt()) {
+                opcion = scanner.nextInt();
+                scanner.nextLine();
                 break;
-            }
-            if (opcion < 1 || opcion > listaEquiposDisponibles.size()) {
-                System.out.println("Selección invalida. Intenta nuevamente");
-                continue;
-            }
-            Equipo equipoSeleccionado = listaEquiposDisponibles.get(opcion - 1);
-            if (seleccionados.contains(equipoSeleccionado)) {
-                System.out.println("Ya has seleccionado este equipo. Elige otro");
             } else {
-                seleccionados.add(equipoSeleccionado);
-                System.out.println("Has sumado " + equipoSeleccionado.getNombre() + " a tu inventario");
+                System.out.println("Entrada no valida. Debes ingresar un numero entero");
+                scanner.nextLine();
             }
         }
-        for (Equipo equipo : seleccionados) {
-            if (this.buscarEquipo(equipo)) {
-                this.agregarEquipoEntregado(equipo); 
-                System.out.println("No puedes llevar mas equipo, inventario lleno");
-                break;
-            }
+
+        if (opcion == 0) {
+            System.out.println("Has finalizado la seleccion de equipos");
+            break;
+        }
+
+        if (opcion < 1 || opcion > listaEquiposDisponibles.size()) {
+            System.out.println("Seleccion invalida. Intenta nuevamente");
+            continue;
+        }
+
+        Equipo equipoSeleccionado = listaEquiposDisponibles.get(opcion - 1);
+        if (inventario.contains(equipoSeleccionado)) {
+            System.out.println("Ya tienes este equipo en tu inventario. Elige otro");
+        } else if (this.buscarEquipo2(equipoSeleccionado)) {
+            System.out.println("Has sumado " + equipoSeleccionado.getNombre() + " a tu inventario");
         }
     }
+
+    // Mostrar resumen del inventario al finalizar
+    System.out.println("\nInventario final de " + nombre + ":");
+    for (Equipo equipo : inventario) {
+        System.out.println("- " + equipo.getNombre());
+    }
+}
+
+public boolean buscarEquipo2(Equipo equipo) {
+    if (inventario.size() < MAX_INVENTARIO) {
+        inventario.add(equipo);
+        System.out.println(nombre + " ha encontrado " + equipo.getNombre());
+        return true;
+    } else {
+        System.out.println("No puedes llevar mas equipo. Revisa tu inventario");
+        return false;
+    }
+}
+
 
     public void elegirArmaActiva() {
         Scanner scanner = new Scanner(System.in);
@@ -710,7 +757,7 @@ public class Superviviente implements Activable, Serializable {
         try (BufferedReader reader = new BufferedReader(new FileReader(archivo))) {
             String linea;
             while ((linea = reader.readLine()) != null) {
-                if (!linea.equals("Histórico:") && !linea.isBlank()) {
+                if (!linea.equals("Historico:") && !linea.isBlank()) {
                     Zombi zombi = Zombi.desdeString(linea);
                     superviviente.historico.add(zombi);
                 }
@@ -769,6 +816,27 @@ public class Superviviente implements Activable, Serializable {
     public String toString() {
         return "Superviviente: " + nombre + ", Estado: " + (vivo ? "VIVO" : "ELIMINADO") + ", Zombis Eliminados: " + zombis_eliminados + ", Heridas Recibidas: " + heridas_recibidas +  ", Coordenadas: " + coordenada;
     }
+     @Override
+    public int hashCode() {
+        return Objects.hash(nombre); // Usar el nombre u otro atributo único
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Superviviente other = (Superviviente) obj;
+        return Objects.equals(this.nombre, other.nombre);
+    }
+    
+            
 
    
 }

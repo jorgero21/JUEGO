@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 public class Zombi implements Activable, Serializable {
@@ -245,16 +246,57 @@ public class Zombi implements Activable, Serializable {
     public Coordenada getCoordenadas() { return posicion; }
 
     public static Zombi desdeString(String texto) {
-        String[] partes = texto.split(" - ");
-        int id = Integer.parseInt(partes[0].split(": ")[1]);
-        TipoZombi tipo = TipoZombi.valueOf(partes[1].split(": ")[1].trim());
-        boolean esNormal = Boolean.parseBoolean(partes[2].split(": ")[1]);
-        boolean esBerserker = Boolean.parseBoolean(partes[3].split(": ")[1]);
-        boolean esToxico = Boolean.parseBoolean(partes[4].split(": ")[1]);
-        String[] coordenadas = partes[5].split(": ")[1].replace("(", "").replace(")", "").split(", ");
-        Coordenada posicion = new Coordenada(Integer.parseInt(coordenadas[0]), Integer.parseInt(coordenadas[1]));
-        return new Zombi(id, tipo, esNormal, esBerserker, esToxico, posicion);
+    // Asegurarse de que la línea tenga el formato esperado
+    String[] partes = texto.split(" - ");
+   
+    // Extraer ID
+    int id = Integer.parseInt(partes[0].split(": ")[1]);
+
+    // Extraer tipo de zombi
+    TipoZombi tipo = TipoZombi.valueOf(partes[1].split(": ")[1].trim());
+
+    // Extraer si es normal, berserker y tóxico
+    boolean esNormal = Boolean.parseBoolean(partes[2].split(": ")[1]);
+    boolean esBerserker = Boolean.parseBoolean(partes[3].split(": ")[1]);
+    boolean esToxico = Boolean.parseBoolean(partes[4].split(": ")[1]);
+
+    // Extraer coordenadas
+    String[] coordenadas = partes[5].split(": ")[1].replace("(", "").replace(")", "").split(", ");
+    if (coordenadas.length != 2) {
+        throw new IllegalArgumentException("Coordenadas mal formateadas: " + partes[5]);
     }
+
+    // Crear objeto Coordenada
+    Coordenada posicion = new Coordenada(Integer.parseInt(coordenadas[0]), Integer.parseInt(coordenadas[1]));
+     if (partes.length != 6) {
+        throw new IllegalArgumentException("Formato incorrecto: " + texto);
+    }
+    
+    // Devolver el zombi creado
+    return new Zombi(id, tipo, esNormal, esBerserker, esToxico, posicion);
+}
+
+ @Override
+    public int hashCode() {
+        return Objects.hash(id); // Usar el nombre u otro atributo único
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Zombi other = (Zombi) obj;
+        return this.id == other.id;
+    }
+
+
 
     @Override
     public String toString() {

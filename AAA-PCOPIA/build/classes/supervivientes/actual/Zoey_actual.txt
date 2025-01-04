@@ -1,2 +1,6 @@
 Actual:
 
+ID: 13 - Tipo: CAMINANTE - Normal: false - Berserker: false - Toxico: true - Posicion: ((1, 2))
+
+ID: 15 - Tipo: CAMINANTE - Normal: false - Berserker: true - Toxico: false - Posicion: ((0, 2))
+
