@@ -24,14 +24,14 @@ import java.util.Set;
  *
  * @author Jorge
  */
-public class Prueba {
+public class Prueba2 {
 
-   
+   /*
     public static void main(String[] args) throws ParseException, IOException, ClassNotFoundException {
         // TODO code application logic here
         
        
-    /* Inventario inventario=new Inventario();
+     Inventario inventario=new Inventario();
         inventario.agregarArma(new Arma("Pistola",1,2,2,3));
         inventario.agregarArma(new Arma("Escopeta",3,0,2,2));
         inventario.agregarArma(new Arma("Sniper",3,4,2,2));
@@ -272,10 +272,10 @@ public class Prueba {
     }
 
     
-*/
+
     
      
-    }
+    }*/
 }
 
    

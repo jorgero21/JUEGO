@@ -31,7 +31,7 @@ public class Juego implements Serializable{
     private int turno; 
     private static int contadorZombisPartida=0;  
     private int id=1;
-    private String archivo = "src/estado_partida.txt"; 
+    private String archivo = "D:\\DESCARGAS\\PROYECTOZOMBI\\JUEGO\\AAA-PCOPIA\\src\\estado_partida.txt"; 
     private static List<Zombi> zombisCargados = new ArrayList<>();
     private List<Superviviente> supervivientesSeleccionados; 
     private boolean enJuego;
@@ -39,7 +39,7 @@ public class Juego implements Serializable{
     private Set<Equipo> inventario;
     private Inventario almacenInventario;
     private boolean consultaHabilitada = true;
-    public static final String DIRECTORIO_GUARDADO = "guardados/";
+    public static final String DIRECTORIO_GUARDADO = "D:\\DESCARGAS\\PROYECTOZOMBI\\JUEGO\\AAA-PCOPIA\\guardados";
     private String nombrePartida; 
     
     public Juego() {
@@ -363,7 +363,7 @@ public class Juego implements Serializable{
         String rutaAlmacenAtaques = DIRECTORIO_GUARDADO + nombrePartida + "_ataques.dat";
         try {
             for (int i = 1; i <= contadorZombisPartida; i++) {
-                Zombi zombi = cargarZombi("src/zombi/zombi" + i + ".dat");
+                Zombi zombi = cargarZombi("D:\\DESCARGAS\\PROYECTOZOMBI\\JUEGO\\AAA-PCOPIA\\src\\zombi\\zombi" + i + ".dat");
                 zombisCargados.add(zombi);  // Agregar a la lista de zombis cargados
             }
             System.out.println("Zombis cargados correctamente");
@@ -456,7 +456,7 @@ public class Juego implements Serializable{
                     s.guardarActual();
                 }
                 for (Zombi zombi : zombis) {
-                    String nombreArchivo = "src/zombi/zombi" + zombi.getId() + ".dat"; 
+                    String nombreArchivo = "D:\\DESCARGAS\\PROYECTOZOMBI\\JUEGO\\AAA-PCOPIA\\src\\zombi\\zombi" + zombi.getId() + ".dat"; 
                     try {
                         guardarZombi(zombi, nombreArchivo);  
                         System.out.println("Zombi con ID " + zombi.getId() + " guardado en el archivo " + nombreArchivo);
@@ -502,7 +502,7 @@ public class Juego implements Serializable{
                     s.guardarActual();
                 }
                for (Zombi zombi : zombis) {
-                   String nombreArchivo = "src/zombi/zombi" + zombi.getId() + ".dat"; 
+                   String nombreArchivo = "D:\\DESCARGAS\\PROYECTOZOMBI\\JUEGO\\AAA-PCOPIA\\src\\zombi\\zombi" + zombi.getId() + ".dat"; 
                    try {
                        guardarZombi(zombi, nombreArchivo);  
                        System.out.println("Zombi con ID " + zombi.getId() + " guardado en el archivo " + nombreArchivo);
@@ -532,8 +532,14 @@ public class Juego implements Serializable{
 
     public void continuarJuego( String nombrePartida ) throws IOException {
         Scanner scanner = new Scanner(System.in);
+         
         enJuego=true;
         activarConsulta();
+        comprobarFinDeJuego(supervivientesSeleccionados);
+        if (!enJuego) {
+            System.out.println("El juego ha finalizado. Regresando al menú principal...");
+            return;
+        }
         if (nombrePartida.isEmpty()) {
             nombrePartida = "Default";
         }
@@ -545,7 +551,7 @@ public class Juego implements Serializable{
         }
         try {
             for (int i = 1; i <= contadorZombisPartida; i++) {
-                Zombi zombi = cargarZombi("src/zombi/zombi" + i + ".dat");
+                Zombi zombi = cargarZombi("D:\\DESCARGAS\\PROYECTOZOMBI\\JUEGO\\AAA-PCOPIA\\src\\zombi\\zombi" + i + ".dat");
                 zombisCargados.add(zombi);  
             }
             System.out.println("Zombis cargados correctamente.");
@@ -576,7 +582,7 @@ public class Juego implements Serializable{
                 }
             }
             if (enJuego) {  
-                System.out.println("FASE DE ACTIVACIoN DE ZOMBIS: \n");
+                System.out.println("FASE DE ACTIVACION DE ZOMBIS: \n");
                 for (Zombi z : zombis) {
                     if (!z.isVivo()) {
                           continue; 
@@ -596,7 +602,7 @@ public class Juego implements Serializable{
                     s.guardarActual();
                 }
                 for (Zombi zombi : zombis) {
-                    String nombreArchivo = "src/zombi/zombi" + zombi.getId() + ".dat";  
+                    String nombreArchivo = "D:\\DESCARGAS\\PROYECTOZOMBI\\JUEGO\\AAA-PCOPIA\\src\\zombi\\zombi" + zombi.getId() + ".dat";  
                     try {
                         guardarZombi(zombi, nombreArchivo);  
                         System.out.println("Zombi con ID " + zombi.getId() + " guardado en el archivo " + nombreArchivo);
@@ -643,7 +649,7 @@ public class Juego implements Serializable{
                      s.guardarActual();
                 }
             for (Zombi zombi : zombis) {
-                String nombreArchivo = "src/zombi/zombi" + zombi.getId() + ".dat";  // Crea el nombre del archivo con el ID del zombi
+                String nombreArchivo = "D:\\DESCARGAS\\PROYECTOZOMBI\\JUEGO\\AAA-PCOPIA\\src\\zombi\\zombi" + zombi.getId() + ".dat";  // Crea el nombre del archivo con el ID del zombi
                 try {
                     guardarZombi(zombi, nombreArchivo);  // Llama a la función de guardar
                     System.out.println("Zombi con ID " + zombi.getId() + " guardado en el archivo " + nombreArchivo);
@@ -1588,18 +1594,6 @@ public class Juego implements Serializable{
         }
     }
     
-    public void listarArchivosGuardados() {
-        File carpeta = new File(DIRECTORIO_GUARDADO);
-        File[] archivos = carpeta.listFiles((dir, name) -> name.toLowerCase().endsWith(".dat") && !name.contains("_ataques"));
-        if (archivos != null && archivos.length > 0) {
-            System.out.println("Archivos disponibles para cargar:");
-            for (int i = 0; i < archivos.length; i++) {
-                System.out.println((i + 1) + ". " + archivos[i].getName());
-            }
-        } else {
-            System.out.println("No hay archivos disponibles para cargar");
-        }
-    }
 
     public void guardarZombi(Zombi zombi, String archivo) throws IOException {
         File file = new File(archivo);
@@ -1622,13 +1616,13 @@ public class Juego implements Serializable{
     }
     
     public void cargarSupervivientes() {
-        almacenSupervivientes = tablero.cargarSupervivientesDesdeFichero("src/supervivientes.txt");
+        almacenSupervivientes = tablero.cargarSupervivientesDesdeFichero("D:\\DESCARGAS\\PROYECTOZOMBI\\JUEGO\\AAA-PCOPIA\\src\\supervivientes.txt");
     }
     
     public void cargarInventario() {
         System.out.println("Iniciando carga del inventario...");
         try {
-            almacenInventario.cargarDesdeFichero("src/inventario.txt");
+            almacenInventario.cargarDesdeFichero("D:\\DESCARGAS\\PROYECTOZOMBI\\JUEGO\\AAA-PCOPIA\\src\\inventario.txt");
             Set<Arma> armas = almacenInventario.getArmas();  
             Set<Provisiones> provisiones = almacenInventario.getProvisiones(); 
             if (!armas.isEmpty()) {
@@ -1657,7 +1651,7 @@ public class Juego implements Serializable{
         j.cargarContadorZombis();
         for (int i = 0; i < contadorZombisPartida; i++) {
             try {
-                Zombi zombi = cargarZombi("src/zombi/zombi" + i + ".dat");  
+                Zombi zombi = cargarZombi("D:\\DESCARGAS\\PROYECTOZOMBI\\JUEGO\\AAA-PCOPIA\\src\\zombi\\zombi" + i + ".dat");  
                 zombisCargados.add(zombi); 
             } catch (IOException | ClassNotFoundException e) {
                 System.out.println("Error al cargar el zombi con ID " + i + ": " + e.getMessage());
@@ -1712,33 +1706,126 @@ public class Juego implements Serializable{
         }
     }
 
-    public boolean cargarEstadoConNombreCarga() throws IOException, ClassNotFoundException, ClassCastException {
-    listarArchivosGuardados();
-    Scanner scanner = new Scanner(System.in);
-    System.out.println("Introduce el numero del archivo que deseas cargar:");
-    int opcion = scanner.nextInt();
+
+
+public void listarArchivosGuardados() {
+    List<File> archivosSinAtaques = new ArrayList<>();
     File carpeta = new File(DIRECTORIO_GUARDADO);
-    File[] archivos = carpeta.listFiles((dir, name) -> name.endsWith(".dat"));
-    if (opcion <= 0 || opcion > archivos.length) {
-        System.out.println("Opcion no valida. Por favor, elige un numero dentro del rango");
-        return false;
+    File[] archivos = carpeta.listFiles((dir, name) -> name.toLowerCase().endsWith(".dat"));
+    if (archivos != null && archivos.length > 0) {
+        for (File archivo : archivos) {
+            if (!archivo.getName().contains("_ataques")) {
+                archivosSinAtaques.add(archivo);  
+            }
+        }
+        if (archivosSinAtaques.isEmpty()) {
+            System.out.println("No hay archivos disponibles para cargar (sin '_ataques').");
+        } else {
+            System.out.println("Archivos disponibles para cargar:");
+            for (int i = 0; i < archivosSinAtaques.size(); i++) {
+                System.out.println((i + 1) + ". " + archivosSinAtaques.get(i).getName());
+            }
+        }
+    } else {
+        System.out.println("No hay archivos .dat disponibles en el directorio.");
     }
-    String nombreArchivo = archivos[opcion - 1].getName();
+}
+
+public boolean cargarEstadoConNombreCarga() throws IOException, ClassNotFoundException, ClassCastException {
+    List<File> archivosSinAtaques = new ArrayList<>();
+    File carpeta = new File(DIRECTORIO_GUARDADO);
+    File[] archivos = carpeta.listFiles((dir, name) -> name.toLowerCase().endsWith(".dat"));
+    if (archivos != null && archivos.length > 0) {
+        for (File archivo : archivos) {
+            if (!archivo.getName().contains("_ataques")) {
+                archivosSinAtaques.add(archivo);  
+            }
+        }
+    }
+    if (archivosSinAtaques.isEmpty()) {
+        System.out.println("No hay archivos disponibles para cargar (sin '_ataques')");
+        return false; 
+    }
+    System.out.println("Archivos disponibles para cargar:");
+    for (int i = 0; i < archivosSinAtaques.size(); i++) {
+        System.out.println((i + 1) + ". " + archivosSinAtaques.get(i).getName());
+    }
+    if (archivosSinAtaques.size() == 1) {
+     System.out.println("Solo hay un archivo disponible: " + archivosSinAtaques.get(0).getName());
+     int opcion = -1; 
+     Scanner scanner = new Scanner(System.in);
+     while (opcion != 0 && opcion != 1) {
+         System.out.println("Introduce 1 para cargar este archivo, o 0 para salir:");
+         if (scanner.hasNextInt()) {
+             opcion = scanner.nextInt();
+             if (opcion == 0) {
+                 System.out.println("No se ha cargado ningun archivo");
+                 return false; 
+             }
+             if (opcion == 1) {
+                 return cargarArchivo(archivosSinAtaques.get(0)); 
+             }
+         } else {
+             System.out.println("Opción no válida. Por favor, ingresa 1 para cargar o 0 para salir.");
+             scanner.next();
+         }
+     }
+     return false;
+ }
+    int opcion = -1;
+    Scanner scanner = new Scanner(System.in);
+    while (opcion != 0) {
+        System.out.println("Introduce el numero del archivo que deseas cargar, o 0 para salir:");
+        if (scanner.hasNextInt()) {
+            opcion = scanner.nextInt();
+            
+            // Si el usuario elige 0, salir
+            if (opcion == 0) {
+                System.out.println("No se ha cargado ningun archivo");
+                return false; // Salir sin cargar nada
+            }
+
+            // Validar si la opción está dentro del rango de archivos disponibles
+            if (opcion <= 0 || opcion > archivosSinAtaques.size()) {
+                System.out.println("Opcion no valida. El numero de archivo no existe. Intenta de nuevo.");
+            } else {
+                // Obtener el nombre del archivo seleccionado
+                return cargarArchivo(archivosSinAtaques.get(opcion - 1)); // Cargar el archivo de la lista filtrada
+            }
+        } else {
+            // Si no se ingresa un número válido, mostrar mensaje de error y seguir pidiendo
+            System.out.println("Opcion no valida. Por favor, ingresa un número entero");
+            scanner.next(); // Limpiar el buffer del scanner para evitar un bucle infinito
+        }
+    }
+
+    return false; // En caso de que se salga del bucle sin una opción válida
+}
+
+// Método auxiliar para cargar el archivo
+private boolean cargarArchivo(File archivo) throws IOException, ClassNotFoundException, ClassCastException {
+    String nombreArchivo = archivo.getName();
     if (!nombreArchivo.endsWith(".dat")) {
-        nombreArchivo += ".dat";
+        nombreArchivo += ".dat"; // Añadir la extensión si no la tiene
     }
-    String nombrePartida = nombreArchivo.replace(".dat", "");  
+
+    String nombrePartida = nombreArchivo.replace(".dat", "");
     String rutaCompletaJuego = DIRECTORIO_GUARDADO + File.separator + nombreArchivo;
     String rutaCompletaAtaques = DIRECTORIO_GUARDADO + File.separator + nombreArchivo.replace(".dat", "_ataques.dat");
+
+    // Cargar el estado del juego desde el archivo
     Object obj = cargarJuego(rutaCompletaJuego);
     if (obj == null) {
-        System.out.println("El archivo esta vacío o no se pudo leer.");
+        System.out.println("El archivo esta vacio o no se pudo leer.");
         return false;
     }
+
     if (!(obj instanceof Juego)) {
         System.out.println("El archivo no contiene un objeto de tipo 'Juego'. Tipo encontrado: " + obj.getClass().getName());
         return false;
     }
+
+    // Asignar los valores del juego cargado
     Juego estadoCargado = (Juego) obj;
     this.supervivientesSeleccionados = estadoCargado.getSupervivientesSeleccionados();
     this.zombis = estadoCargado.zombis;
@@ -1746,13 +1833,58 @@ public class Juego implements Serializable{
     this.turno = estadoCargado.turno;
     this.enJuego = estadoCargado.enJuego;
     System.out.println("Juego cargado con exito desde: " + rutaCompletaJuego);
+
+    // Cargar la lista de ataques
     List<Ataque> listaDeAtaques = cargarListaAtaques(rutaCompletaAtaques);
     System.out.println("Lista de ataques cargada correctamente desde: " + rutaCompletaAtaques);
     System.out.println("Numero de ataques cargados: " + listaDeAtaques.size());
+
     ataque.setAtaques2(listaDeAtaques);
-    continuarJuego(nombrePartida);  
-    return true; 
+
+    // Continuar con el juego cargado
+    continuarJuego(nombrePartida);
+    return true;
 }
+
+
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
     public AlmacenAtaques cargarAlmacenAtaques(String ruta) {
     try (ObjectInputStream entrada = new ObjectInputStream(new FileInputStream(ruta))) {
@@ -1820,7 +1952,7 @@ public class Juego implements Serializable{
     }
 
     private void cargarContadorZombis() {
-        try (BufferedReader lector = new BufferedReader(new FileReader("src/estado_partida.txt"))) {
+        try (BufferedReader lector = new BufferedReader(new FileReader("D:\\DESCARGAS\\PROYECTOZOMBI\\JUEGO\\AAA-PCOPIA\\src\\estado_partida.txt"))) {
             String linea = lector.readLine();
             if (linea != null) {
                 this.contadorZombisPartida = Integer.parseInt(linea);
@@ -1836,7 +1968,7 @@ public class Juego implements Serializable{
     }
 
     public void guardarContadorZombis() {
-        try (BufferedWriter escritor = new BufferedWriter(new FileWriter("src/estado_partida.txt"))) {
+        try (BufferedWriter escritor = new BufferedWriter(new FileWriter("D:\\DESCARGAS\\PROYECTOZOMBI\\JUEGO\\AAA-PCOPIA\\src\\estado_partida.txt"))) {
             escritor.write(String.valueOf(contadorZombisPartida));  // Guardamos el último ID generado
             System.out.println("Contador de zombis guardado: " + contadorZombisPartida);  // Confirma que se ha guardado
         } catch (IOException e) {

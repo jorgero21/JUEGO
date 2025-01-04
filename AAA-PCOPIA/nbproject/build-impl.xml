@@ -1598,6 +1598,7 @@ is divided into following sections:
         <j2seproject3:javac apgeneratedsrcdir="${build.test.classes.dir}" classpath="${javac.test.classpath}" debug="true" destdir="${build.test.classes.dir}" modulepath="${javac.test.modulepath}" processorpath="${javac.test.processorpath}" sourcepath="${javac.test.sourcepath}" srcdir="${test.src.dir}">
             <customize>
                 <compilerarg line="${javac.test.compilerargs}"/>
+		<compilerarg value="-Xlint:unchecked"/>
             </customize>
         </j2seproject3:javac>
         <copy todir="${build.test.classes.dir}">

@@ -689,7 +689,7 @@ public class Superviviente implements Activable, Serializable {
     }
  
     public void guardarHistorico() throws IOException {
-        File archivo = new File("src/supervivientes/historico/" + nombre + "_historico.txt");
+        File archivo = new File("D:\\DESCARGAS\\PROYECTOZOMBI\\JUEGO\\AAA-PCOPIA\\src\\supervivientes\\historico\\" + nombre + "_historico.txt");
          archivo.getParentFile().mkdirs();
         try (PrintWriter writer = new PrintWriter(new FileWriter(archivo,true))) {
             writer.println("Historico:\n");
@@ -701,7 +701,7 @@ public class Superviviente implements Activable, Serializable {
     }
     
     public static Superviviente cargarHistorico(String nombre) throws IOException {
-        File archivo = new File("src/supervivientes/historico/" + nombre + "_historico.txt");
+        File archivo = new File("D:\\DESCARGAS\\PROYECTOZOMBI\\JUEGO\\AAA-PCOPIA\\src\\supervivientes\\historico\\" + nombre + "_historico.txt");
         if (!archivo.exists()) {
             System.out.println("Archivo HISTORICO no encontrado: " + nombre + "_historico.txt");
            return new Superviviente(nombre);
@@ -721,7 +721,7 @@ public class Superviviente implements Activable, Serializable {
     }
 
     public void guardarActual() throws IOException {
-        File archivo = new File("src/supervivientes/actual/" + nombre + "_actual.txt");
+        File archivo = new File("D:\\DESCARGAS\\PROYECTOZOMBI\\JUEGO\\AAA-PCOPIA\\src\\supervivientes\\actual\\" + nombre + "_actual.txt");
         archivo.getParentFile().mkdirs();
         try (PrintWriter writer = new PrintWriter(new FileWriter(archivo))) {
             writer.println("Actual:\n");
@@ -733,7 +733,7 @@ public class Superviviente implements Activable, Serializable {
     }
 
     public static Superviviente cargarActual(String nombre) throws IOException {
-        File archivo = new File("src/supervivientes/actual/" + nombre + "_actual.txt");
+        File archivo = new File("D:\\DESCARGAS\\PROYECTOZOMBI\\JUEGO\\AAA-PCOPIA\\src\\supervivientes\\actual\\" + nombre + "_actual.txt");
         if (!archivo.exists()) {
             System.out.println("Archivo ACTUAL no encontrado: " + nombre + "actual.txt");
            return new Superviviente(nombre);
