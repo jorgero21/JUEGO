@@ -1,4 +1,10 @@
 Actual:
 
-ID: 2 - Tipo: CORREDOR - Normal: false - Berserker: true - Toxico: false - Posicion: ((3, 0))
+ID: 3 - Tipo: CAMINANTE - Normal: false - Berserker: true - Toxico: false - Posicion: ((3, 5))
+
+ID: 1 - Tipo: CAMINANTE - Normal: false - Berserker: true - Toxico: false - Posicion: ((5, 5))
+
+ID: 5 - Tipo: CORREDOR - Normal: false - Berserker: true - Toxico: false - Posicion: ((5, 4))
+
+ID: 2 - Tipo: CORREDOR - Normal: false - Berserker: false - Toxico: true - Posicion: ((5, 4))
 

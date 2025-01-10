@@ -762,9 +762,53 @@ public boolean buscarEquipo2(Equipo equipo) {
             throw e;
         }
     }
- 
+    
+        // Método para cargar los IDs de los zombis históricos desde el archivo
+    private Set<Integer> cargarHistoricoIDs() throws IOException {
+        Set<Integer> historicoIDs = new HashSet<>();
+        File archivo = new File("src/supervivientes/historico/" + nombre + "_historico.txt");
+
+        if (archivo.exists()) {
+            try (Scanner scanner = new Scanner(archivo)) {
+                while (scanner.hasNextLine()) {
+                    String linea = scanner.nextLine();
+                    // Suponemos que el ID está al principio de la línea, por ejemplo: "ID: 1 - ..."
+                    if (linea.contains("ID:")) {
+                        int id = Integer.parseInt(linea.split(":")[1].trim().split(" ")[0]);
+                        historicoIDs.add(id);
+                    }
+                }
+            }
+        }
+        return historicoIDs;
+    }
+
+    // Método para guardar el historial de zombis, solo si su ID es nuevo
     public void guardarHistorico() throws IOException {
-        File archivo = new File("src//supervivientes//historico//" + nombre + "_historico.txt");
+        // Cargar los IDs históricos ya existentes en el archivo
+        Set<Integer> historicoIDs = cargarHistoricoIDs();
+        
+        File archivo = new File("src/supervivientes/historico/" + nombre + "_historico.txt");
+        archivo.getParentFile().mkdirs();
+        
+        try (PrintWriter writer = new PrintWriter(new FileWriter(archivo, true))) {
+            writer.println("Historico:\n");
+
+            // Guardar solo los nuevos zombis que no estén en el historial
+            for (Zombi zombi : this.historico) {
+                if (!historicoIDs.contains(zombi.getId())) {
+                    writer.println(zombi.toString() + "\n");
+                    historicoIDs.add(zombi.getId());  // Añadir el ID del zombi al conjunto de históricos
+                }
+            }
+        }
+
+        System.out.println("Historico guardado con exito como: " + nombre + "_historico.txt");
+    }
+
+ 
+   /* public void guardarHistorico() throws IOException {
+        File archivo = new File("src/supervivientes/historico/" + nombre + "_historico.txt");
          archivo.getParentFile().mkdirs();
         try (PrintWriter writer = new PrintWriter(new FileWriter(archivo,true))) {
             writer.println("Historico:\n");
@@ -773,10 +817,10 @@ public boolean buscarEquipo2(Equipo equipo) {
             }
         }
         System.out.println("Historico guardado con exito como: " + nombre + "_historico.txt");
-    }
+    }*/
     
     public static Superviviente cargarHistorico(String nombre) throws IOException {
-        File archivo = new File("src//supervivientes//historico//" + nombre + "_historico.txt");
+        File archivo = new File("src/supervivientes/historico/" + nombre + "_historico.txt");
         if (!archivo.exists()) {
             System.out.println("Archivo HISTORICO no encontrado: " + nombre + "_historico.txt");
            return new Superviviente(nombre);
@@ -796,7 +840,7 @@ public boolean buscarEquipo2(Equipo equipo) {
     }
 
     public void guardarActual() throws IOException {
-        File archivo = new File("src//supervivientes//actual//" + nombre + "_actual.txt");
+        File archivo = new File("src/supervivientes/actual/" + nombre + "_actual.txt");
         archivo.getParentFile().mkdirs();
         try (PrintWriter writer = new PrintWriter(new FileWriter(archivo))) {
             writer.println("Actual:\n");
@@ -808,7 +852,7 @@ public boolean buscarEquipo2(Equipo equipo) {
     }
 
     public static Superviviente cargarActual(String nombre) throws IOException {
-        File archivo = new File("src//supervivientes//actua//" + nombre + "_actual.txt");
+        File archivo = new File("src/supervivientes/actua/" + nombre + "_actual.txt");
         if (!archivo.exists()) {
             System.out.println("Archivo ACTUAL no encontrado: " + nombre + "actual.txt");
            return new Superviviente(nombre);

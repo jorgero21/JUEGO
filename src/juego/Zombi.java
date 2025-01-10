@@ -302,5 +302,7 @@ public class Zombi implements Activable, Serializable {
     public String toString() {
         return "ID: " + id + " - Tipo: " + tipo + " - Normal: " + esNormal +   " - Berserker: " + esBerserker + " - Toxico: " + esToxico +     " - Posicion: (" + posicion+ ")";
     }
+
+  
     
 }
