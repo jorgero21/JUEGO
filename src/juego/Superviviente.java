@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package a.poo.calipsis.zombi;
+package juego;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -349,7 +349,7 @@ public class Superviviente implements Activable, Serializable {
                         continue; 
                     }
 
-                    // Procesar cada zombi en la casilla
+                   // Procesar cada zombi en la casilla
                     for (Zombi z : zombisEnCasilla) {
                         if (z.isBerserker() && armaSeleccionada.getAlcance() > 0) {
                             this.restarAccion();
@@ -366,8 +366,20 @@ public class Superviviente implements Activable, Serializable {
                             z.setVivo(false);
 
                             if (z.isToxico() && this.coordenada.equals(casillaObjetivo.getCoordenadas())) {
+                                // Aquí se aplica la herida tanto al atacante como a los otros supervivientes en la misma casilla
                                 System.out.println("El zombi toxico te ha causado una herida al ser eliminado!");
+
+                                // Recibir herida al atacante
                                 recibirHerida(z);
+
+                                // Recibir herida a todos los supervivientes en la casilla objetivo
+                                for (Object entidad : casillaObjetivo.getEntidades()) {
+                                    if (entidad instanceof Superviviente && entidad != this) {
+                                        Superviviente superviviente = (Superviviente) entidad;
+                                        System.out.println("El zombi tóxico ha causado una herida a " + superviviente.getNombre());
+                                        superviviente.recibirHerida(z); // Aplica la herida al otro superviviente
+                                    }
+                                }
                             }
 
                             casillaObjetivo.eliminarEntidad(z);
@@ -376,7 +388,7 @@ public class Superviviente implements Activable, Serializable {
                             zombis_eliminados++;
                             ataquesRealizados++; // Incrementar el contador de ataques realizados
                             Ataque ataqueRealizado = new Ataque(1); // Crear un ataque individual por cada éxito usado
-                            almacen.registrarAtaque(ataqueRealizado, rutaAlmacenAtaques);
+                            almacen.registrarAtaque(ataque, rutaAlmacenAtaques);
 
                         } else {
                             System.out.println("El zombi " + z.getTipo() + " es demasiado resistente para este ataque");
@@ -393,6 +405,7 @@ public class Superviviente implements Activable, Serializable {
                         System.out.println("No hay mas exitos disponibles");
                     }
 
+
                 } else if (decision.equalsIgnoreCase("n")) {
                     exitos--;  
                     System.out.println("El exito no se utilizara");
@@ -405,6 +418,7 @@ public class Superviviente implements Activable, Serializable {
 
         System.out.println("Numero total de ataques realizados: " + ataquesRealizados);
         System.out.println("Numero de ataques registrados en el almacen: " + almacen.getAtaques2().size());
+
     } else {
         System.out.println("No se consiguieron exitos. El ataque ha fallado");
     }
@@ -654,67 +668,81 @@ public boolean buscarEquipo2(Equipo equipo) {
 }
 
 
-    public void elegirArmaActiva() {
-        Scanner scanner = new Scanner(System.in);
-        List<Arma> armasEnInventario = inventario.stream().filter(item ->item instanceof Arma).map(item ->(Arma)item).toList();
-        if (armasEnInventario.isEmpty()) {
-            System.out.println("No tienes armas en tu inventario");
-            return;
+   public void elegirArmaActiva() {
+    Scanner scanner = new Scanner(System.in);
+    List<Arma> armasEnInventario = inventario.stream().filter(item -> item instanceof Arma).map(item -> (Arma) item).toList();
+
+    if (armasEnInventario.isEmpty()) {
+        System.out.println("No tienes armas en tu inventario");
+        return;
+    }
+
+    System.out.println("Armas disponibles en tu inventario:");
+    for (int i = 0; i < armasEnInventario.size(); i++) {
+        System.out.println((i + 1) + ". " + armasEnInventario.get(i).getNombre());
+    }
+
+    System.out.println("\nTus armas activas actuales:");
+    for (int i = 0; i < armasActivas.size(); i++) {
+        System.out.println((i + 1) + ". " + armasActivas.get(i).getNombre());
+    }
+
+    int seleccion = -1;
+    while (seleccion < 1 || seleccion > armasEnInventario.size()) {
+        System.out.println("\nSelecciona un arma para activarla (ingresa el numero):");
+        if (scanner.hasNextInt()) {
+            seleccion = scanner.nextInt();
+            if (seleccion < 1 || seleccion > armasEnInventario.size()) {
+                System.out.println("Seleccion invalida. Debes elegir un numero entre 1 y " + armasEnInventario.size() + ".");
+            }
+        } else {
+            System.out.println("Entrada invalida. Debes ingresar un numero");
+            scanner.next(); 
         }
-        System.out.println("Armas disponibles en tu inventario:");
-        for (int i = 0; i < armasEnInventario.size(); i++) {
-            System.out.println((i + 1) + ". " + armasEnInventario.get(i).getNombre());
-        }
-        System.out.println("\nTus armas activas actuales:");
+    }
+
+    Arma armaSeleccionada = armasEnInventario.get(seleccion - 1);
+
+    // Verificar si el arma ya está en armasActivas
+    if (armasActivas.contains(armaSeleccionada)) {
+        System.out.println("Ya tienes esta arma activa.");
+        return; // Si ya está activa, no hacemos nada más
+    }
+
+    if (armasActivas.size() >= 2) {
+        System.out.println("\nYa tienes dos armas activas:");
         for (int i = 0; i < armasActivas.size(); i++) {
             System.out.println((i + 1) + ". " + armasActivas.get(i).getNombre());
         }
-        int seleccion = -1;
-        while (seleccion < 1 || seleccion > armasEnInventario.size()) {
-            System.out.println("\nSelecciona un arma para activarla (ingresa el numero):");
+
+        int reemplazo = -1;
+        while (reemplazo < 0 || reemplazo > armasActivas.size()) {
+            System.out.println("Cual deseas reemplazar? (1 o 2, o 0 para cancelar):");
+
             if (scanner.hasNextInt()) {
-                seleccion = scanner.nextInt();
-                if (seleccion < 1 || seleccion > armasEnInventario.size()) {
-                    System.out.println("Seleccion invalida. Debes elegir un numero entre 1 y " + armasEnInventario.size() + ".");
+                reemplazo = scanner.nextInt();
+                if (reemplazo < 0 || reemplazo > armasActivas.size()) {
+                    System.out.println("Seleccion invalida. Debes elegir 1, 2, o 0 para cancelar");
                 }
             } else {
                 System.out.println("Entrada invalida. Debes ingresar un numero");
-                scanner.next(); 
+                scanner.next();
             }
         }
-        Arma armaSeleccionada = armasEnInventario.get(seleccion - 1);
 
-        if (armasActivas.size() >= 2) {
-            System.out.println("\nYa tienes dos armas activas:");
-            for (int i = 0; i < armasActivas.size(); i++) {
-                System.out.println((i + 1) + ". " + armasActivas.get(i).getNombre());
-            }
-            int reemplazo = -1;
-            while (reemplazo < 0 || reemplazo > armasActivas.size()) {
-                System.out.println("Cual deseas reemplazar? (1 o 2, o 0 para cancelar):");
-
-                if (scanner.hasNextInt()) {
-                    reemplazo = scanner.nextInt();
-                    if (reemplazo < 0 || reemplazo > armasActivas.size()) {
-                        System.out.println("Seleccion invalida. Debes elegir 1, 2, o 0 para cancelar");
-                    }
-                } else {
-                    System.out.println("Entrada invalida. Debes ingresar un numero");
-                    scanner.next();
-                }
-            }
-            if (reemplazo == 0) {
-                System.out.println("No se realizo ningun cambio");
-                return;
-            }
-
-            armasActivas.set(reemplazo - 1, armaSeleccionada);
-            System.out.println("Has reemplazado tu arma activa con " + armaSeleccionada.getNombre());
-        } else {
-            armasActivas.add(armaSeleccionada);
-            System.out.println("Has activado el arma " + armaSeleccionada.getNombre());
+        if (reemplazo == 0) {
+            System.out.println("No se realizo ningun cambio");
+            return;
         }
+
+        armasActivas.set(reemplazo - 1, armaSeleccionada);
+        System.out.println("Has reemplazado tu arma activa con " + armaSeleccionada.getNombre());
+    } else {
+        armasActivas.add(armaSeleccionada);
+        System.out.println("Has activado el arma " + armaSeleccionada.getNombre());
     }
+}
+
     
     public void guardarAlmacen(AlmacenAtaques almacen, String archivo, Juego j) throws IOException {
         File file = new File(archivo);
@@ -768,7 +796,7 @@ public boolean buscarEquipo2(Equipo equipo) {
     }
 
     public void guardarActual() throws IOException {
-        File archivo = new File("D:\\DESCARGAS\\PROYECTOZOMBI\\JUEGO\\AAA-PCOPIA\\src\\supervivientes\\actual\\" + nombre + "_actual.txt");
+        File archivo = new File("src//supervivientes//actual//" + nombre + "_actual.txt");
         archivo.getParentFile().mkdirs();
         try (PrintWriter writer = new PrintWriter(new FileWriter(archivo))) {
             writer.println("Actual:\n");

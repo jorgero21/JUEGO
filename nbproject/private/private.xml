@@ -3,17 +3,11 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/D:/DESCARGAS/PROYECTOZOMBI/JUEGO/AAA-PCOPIA/src/a/poo/calipsis/zombi/Main.java</file>
-            <file>file:/D:/DESCARGAS/PROYECTOZOMBI/JUEGO/AAA-PCOPIA/src/a/poo/calipsis/zombi/Juego.java</file>
-            <file>file:/D:/DESCARGAS/PROYECTOZOMBI/JUEGO/AAA-PCOPIA/src/a/poo/calipsis/zombi/TipoZombi.java</file>
-            <file>file:/D:/DESCARGAS/PROYECTOZOMBI/JUEGO/AAA-PCOPIA/src/a/poo/calipsis/zombi/Tablero.java</file>
-            <file>file:/D:/DESCARGAS/PROYECTOZOMBI/JUEGO/AAA-PCOPIA/src/a/poo/calipsis/zombi/Ataque.java</file>
-            <file>file:/D:/DESCARGAS/PROYECTOZOMBI/JUEGO/AAA-PCOPIA/src/a/poo/calipsis/zombi/AlmacenAtaques.java</file>
-            <file>file:/D:/DESCARGAS/PROYECTOZOMBI/JUEGO/AAA-PCOPIA/src/a/poo/calipsis/zombi/Superviviente.java</file>
-            <file>file:/D:/DESCARGAS/PROYECTOZOMBI/JUEGO/AAA-PCOPIA/src/a/poo/calipsis/zombi/Inventario.java</file>
-            <file>file:/D:/DESCARGAS/PROYECTOZOMBI/JUEGO/AAA-PCOPIA/src/a/poo/calipsis/zombi/Arma.java</file>
-            <file>file:/D:/DESCARGAS/PROYECTOZOMBI/JUEGO/AAA-PCOPIA/src/a/poo/calipsis/zombi/Zombi.java</file>
-            <file>file:/D:/DESCARGAS/PROYECTOZOMBI/JUEGO/AAA-PCOPIA/src/a/poo/calipsis/zombi/Prueba2.java</file>
+            <file>file:/D:/DESCARGAS/GrupoL/A-POO-Calipsis%20zombi/src/estado_partida.txt</file>
+            <file>file:/D:/DESCARGAS/GrupoL/A-POO-Calipsis%20zombi/src/LeerAlmacenAtaques.java</file>
+            <file>file:/D:/DESCARGAS/GrupoL/A-POO-Calipsis%20zombi/src/juego/Juego.java</file>
+            <file>file:/D:/DESCARGAS/GrupoL/A-POO-Calipsis%20zombi/src/juego/AlmacenAtaques.java</file>
+            <file>file:/D:/DESCARGAS/GrupoL/A-POO-Calipsis%20zombi/src/juego/Superviviente.java</file>
         </group>
     </open-files>
 </project-private>

@@ -1,0 +1,4 @@
+Actual:
+
+ID: 2 - Tipo: CORREDOR - Normal: false - Berserker: true - Toxico: false - Posicion: ((3, 0))
+

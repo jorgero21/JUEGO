@@ -1,4 +1,4 @@
-package a.poo.calipsis.zombi;
+package juego;
 
 import java.io.Serializable;
 import java.util.ArrayList;

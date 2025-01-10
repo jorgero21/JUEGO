@@ -1,9 +1,9 @@
-package a.poo.calipsis.zombi;
+package juego;
 
 
-import a.poo.calipsis.zombi.Coordenada;
-import a.poo.calipsis.zombi.Superviviente;
-import a.poo.calipsis.zombi.Tablero;
+import juego.Coordenada;
+import juego.Superviviente;
+import juego.Tablero;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -31,7 +31,7 @@ public class Juego implements Serializable{
     private int turno; 
     private static int contadorZombisPartida=0;  
     private int id=1;
-    private String archivo = "src//estado_partida.txt"; 
+    private String archivo = "src/estado_partida.txt"; 
     private static List<Zombi> zombisCargados = new ArrayList<>();
     private List<Superviviente> supervivientesSeleccionados; 
     private boolean enJuego;
@@ -39,7 +39,7 @@ public class Juego implements Serializable{
     private Set<Equipo> inventario;
     private Inventario almacenInventario;
     private boolean consultaHabilitada = true;
-    public static final String DIRECTORIO_GUARDADO = "guardados//";
+    public static final String DIRECTORIO_GUARDADO = "src/guardados/";
     private String nombrePartida; 
     
     public Juego() {
@@ -67,7 +67,7 @@ public class Juego implements Serializable{
         for (int i = 0; i < todosSupervivientes.size(); i++) {
             System.out.println((i + 1) + ". " + todosSupervivientes.get(i).getNombre());
         }
-        while (seleccionados.size() < 2) {
+        while (seleccionados.size() < 1) {
             System.out.print("Introduce el numero del superviviente que deseas seleccionar (o 0 para terminar): ");
             if (scanner.hasNextInt()) {
                 int eleccion = scanner.nextInt() - 1;
@@ -363,7 +363,7 @@ public class Juego implements Serializable{
         String rutaAlmacenAtaques = DIRECTORIO_GUARDADO + nombrePartida + "_ataques.dat";
         try {
             for (int i = 1; i <= contadorZombisPartida; i++) {
-                Zombi zombi = cargarZombi("D:\\DESCARGAS\\PROYECTOZOMBI\\JUEGO\\AAA-PCOPIA\\src\\zombi\\zombi" + i + ".dat");
+                Zombi zombi = cargarZombi("src/zombi/zombi" + i + ".dat");
                 zombisCargados.add(zombi);  // Agregar a la lista de zombis cargados
             }
             System.out.println("Zombis cargados correctamente");
@@ -456,7 +456,7 @@ public class Juego implements Serializable{
                     s.guardarActual();
                 }
                 for (Zombi zombi : zombis) {
-                    String nombreArchivo = "D:\\DESCARGAS\\PROYECTOZOMBI\\JUEGO\\AAA-PCOPIA\\src\\zombi\\zombi" + zombi.getId() + ".dat"; 
+                    String nombreArchivo = "src/zombi/zombi" + zombi.getId() + ".dat"; 
                     try {
                         guardarZombi(zombi, nombreArchivo);  
                         System.out.println("Zombi con ID " + zombi.getId() + " guardado en el archivo " + nombreArchivo);
@@ -502,7 +502,7 @@ public class Juego implements Serializable{
                     s.guardarActual();
                 }
                for (Zombi zombi : zombis) {
-                   String nombreArchivo = "D:\\DESCARGAS\\PROYECTOZOMBI\\JUEGO\\AAA-PCOPIA\\src\\zombi\\zombi" + zombi.getId() + ".dat"; 
+                   String nombreArchivo = "src/zombi/zombi" + zombi.getId() + ".dat"; 
                    try {
                        guardarZombi(zombi, nombreArchivo);  
                        System.out.println("Zombi con ID " + zombi.getId() + " guardado en el archivo " + nombreArchivo);
@@ -551,7 +551,7 @@ public class Juego implements Serializable{
         }
         try {
             for (int i = 1; i <= contadorZombisPartida; i++) {
-                Zombi zombi = cargarZombi("D:\\DESCARGAS\\PROYECTOZOMBI\\JUEGO\\AAA-PCOPIA\\src\\zombi\\zombi" + i + ".dat");
+                Zombi zombi = cargarZombi("src/zombi/zombi" + i + ".dat");
                 zombisCargados.add(zombi);  
             }
             System.out.println("Zombis cargados correctamente.");
@@ -602,7 +602,7 @@ public class Juego implements Serializable{
                     s.guardarActual();
                 }
                 for (Zombi zombi : zombis) {
-                    String nombreArchivo = "D:\\DESCARGAS\\PROYECTOZOMBI\\JUEGO\\AAA-PCOPIA\\src\\zombi\\zombi" + zombi.getId() + ".dat";  
+                    String nombreArchivo = "src/zombi/zombi" + zombi.getId() + ".dat";  
                     try {
                         guardarZombi(zombi, nombreArchivo);  
                         System.out.println("Zombi con ID " + zombi.getId() + " guardado en el archivo " + nombreArchivo);
@@ -649,7 +649,7 @@ public class Juego implements Serializable{
                      s.guardarActual();
                 }
             for (Zombi zombi : zombis) {
-                String nombreArchivo = "D:\\DESCARGAS\\PROYECTOZOMBI\\JUEGO\\AAA-PCOPIA\\src\\zombi\\zombi" + zombi.getId() + ".dat";  // Crea el nombre del archivo con el ID del zombi
+                String nombreArchivo = "src/zombi/zombi" + zombi.getId() + ".dat";  // Crea el nombre del archivo con el ID del zombi
                 try {
                     guardarZombi(zombi, nombreArchivo);  // Llama a la función de guardar
                     System.out.println("Zombi con ID " + zombi.getId() + " guardado en el archivo " + nombreArchivo);
@@ -1616,13 +1616,13 @@ public class Juego implements Serializable{
     }
     
     public void cargarSupervivientes() {
-        almacenSupervivientes = tablero.cargarSupervivientesDesdeFichero("src//supervivientes.txt");
+        almacenSupervivientes = tablero.cargarSupervivientesDesdeFichero("src/supervivientes.txt");
     }
     
     public void cargarInventario() {
         System.out.println("Iniciando carga del inventario...");
         try {
-            almacenInventario.cargarDesdeFichero("src//inventario.txt");
+            almacenInventario.cargarDesdeFichero("src/inventario.txt");
             Set<Arma> armas = almacenInventario.getArmas();  
             Set<Provisiones> provisiones = almacenInventario.getProvisiones(); 
             if (!armas.isEmpty()) {
@@ -1651,7 +1651,7 @@ public class Juego implements Serializable{
         j.cargarContadorZombis();
         for (int i = 0; i < contadorZombisPartida; i++) {
             try {
-                Zombi zombi = cargarZombi("D:\\DESCARGAS\\PROYECTOZOMBI\\JUEGO\\AAA-PCOPIA\\src\\zombi\\zombi" + i + ".dat");  
+                Zombi zombi = cargarZombi("src/zombi/zombi" + i + ".dat");  
                 zombisCargados.add(zombi); 
             } catch (IOException | ClassNotFoundException e) {
                 System.out.println("Error al cargar el zombi con ID " + i + ": " + e.getMessage());
@@ -1680,31 +1680,7 @@ public class Juego implements Serializable{
         }
     }
 
-    public void guardarAlmacenAtaques(AlmacenAtaques almacen, String ruta) {
-        try (ObjectOutputStream salida = new ObjectOutputStream(new FileOutputStream(ruta))) {
-            salida.writeObject(almacen);
-        } catch (IOException e) {
-            System.out.println("Error al guardar el almacen de ataques: " + e.getMessage());
-        }
-    }
-    
-    public void guardarListaAtaques(List<Ataque> listaAtaques, String ruta) {
-        try (ObjectOutputStream salida = new ObjectOutputStream(new FileOutputStream(ruta))) {
-            salida.writeObject(listaAtaques);  
-            System.out.println("Lista de ataques guardada correctamente en: " + ruta);
-        } catch (IOException e) {
-            System.out.println("Error al guardar la lista de ataques: " + e.getMessage());
-        }
-    }
-    
-    public List<Ataque> cargarListaAtaques(String ruta) {
-        try (ObjectInputStream entrada = new ObjectInputStream(new FileInputStream(ruta))) {
-            return (List<Ataque>) entrada.readObject(); 
-        } catch (IOException | ClassNotFoundException e) {
-            System.out.println("Error al cargar la lista de ataques: " + e.getMessage());
-            return new ArrayList<>(); 
-        }
-    }
+
 
 
 
@@ -1810,8 +1786,9 @@ private boolean cargarArchivo(File archivo) throws IOException, ClassNotFoundExc
     }
 
     String nombrePartida = nombreArchivo.replace(".dat", "");
-    String rutaCompletaJuego = DIRECTORIO_GUARDADO + File.separator + nombreArchivo;
-    String rutaCompletaAtaques = DIRECTORIO_GUARDADO + File.separator + nombreArchivo.replace(".dat", "_ataques.dat");
+   // String rutaCompletaJuego = DIRECTORIO_GUARDADO + File.separator + nombreArchivo;
+   String rutaCompletaJuego = DIRECTORIO_GUARDADO + nombreArchivo;
+    String rutaCompletaAtaques = DIRECTORIO_GUARDADO + nombreArchivo.replace(".dat", "_ataques.dat");
 
     // Cargar el estado del juego desde el archivo
     Object obj = cargarJuego(rutaCompletaJuego);
@@ -1837,7 +1814,7 @@ private boolean cargarArchivo(File archivo) throws IOException, ClassNotFoundExc
     // Cargar la lista de ataques
     List<Ataque> listaDeAtaques = cargarListaAtaques(rutaCompletaAtaques);
     System.out.println("Lista de ataques cargada correctamente desde: " + rutaCompletaAtaques);
-    System.out.println("Numero de ataques cargados: " + listaDeAtaques.size());
+    System.out.println("Numero de ataques cargados1111: " + listaDeAtaques.size());
 
     ataque.setAtaques2(listaDeAtaques);
 
@@ -1879,7 +1856,7 @@ public boolean cargarEstadoConNombreCarga2() throws IOException, ClassNotFoundEx
                  return false; 
              }
              if (opcion == 1) {
-                 return cargarArchivo(archivosSinAtaques.get(0)); 
+                 return cargarArchivo2(archivosSinAtaques.get(0)); 
              }
          } else {
              System.out.println("Opción no válida. Por favor, ingresa 1 para cargar o 0 para salir.");
@@ -1926,8 +1903,8 @@ private boolean cargarArchivo2(File archivo) throws IOException, ClassNotFoundEx
     }
 
     String nombrePartida = nombreArchivo.replace(".dat", "");
-    String rutaCompletaJuego = DIRECTORIO_GUARDADO + File.separator + nombreArchivo;
-    String rutaCompletaAtaques = DIRECTORIO_GUARDADO + File.separator + nombreArchivo.replace(".dat", "_ataques.dat");
+    String rutaCompletaJuego = DIRECTORIO_GUARDADO  + nombreArchivo;
+    String rutaCompletaAtaques = DIRECTORIO_GUARDADO  + nombreArchivo.replace(".dat", "_ataques.dat");
 
     // Cargar el estado del juego desde el archivo
     Object obj = cargarJuego(rutaCompletaJuego);
@@ -1953,51 +1930,12 @@ private boolean cargarArchivo2(File archivo) throws IOException, ClassNotFoundEx
     // Cargar la lista de ataques
     List<Ataque> listaDeAtaques = cargarListaAtaques(rutaCompletaAtaques);
     System.out.println("Lista de ataques cargada correctamente desde: " + rutaCompletaAtaques);
-    System.out.println("Numero de ataques cargados: " + listaDeAtaques.size());
+    System.out.println("Numero de ataques cargados333333: " + listaDeAtaques.size());
 
     ataque.setAtaques2(listaDeAtaques);
 
     return true;
 }
-
-
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
 
     public AlmacenAtaques cargarAlmacenAtaques(String ruta) {
     try (ObjectInputStream entrada = new ObjectInputStream(new FileInputStream(ruta))) {
@@ -2007,7 +1945,31 @@ private boolean cargarArchivo2(File archivo) throws IOException, ClassNotFoundEx
         return new AlmacenAtaques();  // Retornar un almacén vacío si ocurre un error
     }
 }
-
+    public void guardarAlmacenAtaques(AlmacenAtaques almacen, String ruta) {
+        try (ObjectOutputStream salida = new ObjectOutputStream(new FileOutputStream(ruta))) {
+            salida.writeObject(almacen);
+        } catch (IOException e) {
+            System.out.println("Error al guardar el almacen de ataques: " + e.getMessage());
+        }
+    }
+    
+    public void guardarListaAtaques(List<Ataque> listaAtaques, String ruta) {
+        try (ObjectOutputStream salida = new ObjectOutputStream(new FileOutputStream(ruta))) {
+            salida.writeObject(listaAtaques);  
+            System.out.println("Lista de ataques guardada correctamente en: " + ruta);
+        } catch (IOException e) {
+            System.out.println("Error al guardar la lista de ataques: " + e.getMessage());
+        }
+    }
+    
+    public List<Ataque> cargarListaAtaques(String ruta) {
+        try (ObjectInputStream entrada = new ObjectInputStream(new FileInputStream(ruta))) {
+            return (List<Ataque>) entrada.readObject(); 
+        } catch (IOException | ClassNotFoundException e) {
+            System.out.println("Error al cargar la lista de ataques: " + e.getMessage());
+            return new ArrayList<>(); 
+        }
+    }
     public static void guardarJuego(Object objeto, String nombreArchivo) {
            try (ObjectOutputStream salida = new ObjectOutputStream(new FileOutputStream(nombreArchivo))) {
                salida.writeObject(objeto); // Serializa el objeto y lo escribe en el archivo
@@ -2065,7 +2027,7 @@ private boolean cargarArchivo2(File archivo) throws IOException, ClassNotFoundEx
     }
 
     private void cargarContadorZombis() {
-        try (BufferedReader lector = new BufferedReader(new FileReader("src//estado_partida.txt"))) {
+        try (BufferedReader lector = new BufferedReader(new FileReader("src/estado_partida.txt"))) {
             String linea = lector.readLine();
             if (linea != null) {
                 this.contadorZombisPartida = Integer.parseInt(linea);
@@ -2081,7 +2043,7 @@ private boolean cargarArchivo2(File archivo) throws IOException, ClassNotFoundEx
     }
 
     public void guardarContadorZombis() {
-        try (BufferedWriter escritor = new BufferedWriter(new FileWriter("src//estado_partida.txt"))) {
+        try (BufferedWriter escritor = new BufferedWriter(new FileWriter("src/estado_partida.txt"))) {
             escritor.write(String.valueOf(contadorZombisPartida));  // Guardamos el último ID generado
             System.out.println("Contador de zombis guardado: " + contadorZombisPartida);  // Confirma que se ha guardado
         } catch (IOException e) {

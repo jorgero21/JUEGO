@@ -1,5 +1,6 @@
-/*import a.poo.calipsis.zombi.AlmacenAtaques;
-import a.poo.calipsis.zombi.Ataque;
+
+import juego.AlmacenAtaques;
+import juego.Ataque;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -10,7 +11,7 @@ public class LeerAlmacenAtaques {
     public static void main(String[] args) {
         try {
             // Ruta del archivo a leer
-            String rutaArchivo = "guardados/pñ_ataques.dat";
+            String rutaArchivo = "src/guardados/q_ataques.dat";
             System.out.println("Intentando cargar archivo: " + rutaArchivo);
 
             AlmacenAtaques almacenAtaques;
@@ -35,4 +36,3 @@ public class LeerAlmacenAtaques {
         }
     }
 }
-*/

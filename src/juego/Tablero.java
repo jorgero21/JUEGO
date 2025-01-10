@@ -1,6 +1,6 @@
-package a.poo.calipsis.zombi;
+package juego;
 
-import a.poo.calipsis.zombi.Superviviente;
+import juego.Superviviente;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileReader;

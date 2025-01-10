@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package a.poo.calipsis.zombi;
+package juego;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -45,6 +45,6 @@ public class Ataque implements Serializable{
     
     @Override 
     public String toString() { 
-        return "Ataque:\n" +"Dados lanzados: " + Arrays.toString(dados) + "\n" +"Resultado: Se obtuvieron " + resultado + " exitos\n";
+        return "Ataque:\n" +"Dados lanzados: " + Arrays.toString(dados) + "\n" +"Resultado: Se obtuvieron " + resultado +"\n";
 }
     }

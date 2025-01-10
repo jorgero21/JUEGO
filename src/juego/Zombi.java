@@ -1,6 +1,6 @@
-package a.poo.calipsis.zombi;
+package juego;
 
-import a.poo.calipsis.zombi.Superviviente.TipoDeHerida;
+import juego.Superviviente.TipoDeHerida;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;

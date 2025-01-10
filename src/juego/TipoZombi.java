@@ -1,5 +1,5 @@
 
-package a.poo.calipsis.zombi;
+package juego;
 
 /**
  *

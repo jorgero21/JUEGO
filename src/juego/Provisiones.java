@@ -1,4 +1,4 @@
-package a.poo.calipsis.zombi;
+package juego;
 
 import java.time.LocalDate;
 import java.util.Objects;

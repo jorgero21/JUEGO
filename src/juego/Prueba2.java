@@ -2,10 +2,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Main.java to edit this template
  */
-package a.poo.calipsis.zombi;
+package juego;
 
-import static a.poo.calipsis.zombi.Superviviente.cargarActual;
-import static a.poo.calipsis.zombi.Superviviente.cargarHistorico;
+import static juego.Superviviente.cargarActual;
+import static juego.Superviviente.cargarHistorico;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -30,6 +30,15 @@ public class Prueba2 {
 
    
     public static void main(String[] args) throws ParseException, IOException, ClassNotFoundException {
+        // Crear el ataque con 3 dados
+        Ataque ataque = new Ataque(3);
+
+        // Lanzar los dados con un valor de éxito mínimo de 4
+        ataque.lanzarDados(4);
+
+        // Imprimir el ataque
+        System.out.println(ataque);
+    }
         // Cargar el histórico de zombis de un superviviente
         /* Superviviente superviviente2 = cargarActual("rochelle");
          for (Zombi zombi : superviviente2.getActual()) {
@@ -46,7 +55,7 @@ public class Prueba2 {
             System.out.println("Posición: " + zombi.getPosicion());
             System.out.println("---");
         }*/ 
-        Superviviente superviviente = cargarHistorico("rochelle");
+       /* Superviviente superviviente = cargarHistorico("rochelle");
         // Verificar los zombis en el histórico
         for (Zombi zombi : superviviente.getHistorico()) {
             System.out.println("Zombi ID: " + zombi.getId());
@@ -60,8 +69,10 @@ public class Prueba2 {
             System.out.println("Tipo: " + zombi.getTipo());
             System.out.println("Posición: " + zombi.getPosicion());
             System.out.println("---");
-        }
-        
+        }/*
+      
+}
+
 }
 
         /*
