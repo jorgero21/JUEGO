@@ -1,4 +1,0 @@
-Actual:
-
-ID: 7 - Tipo: CAMINANTE - Normal: true - Berserker: false - Toxico: false - Posicion: ((4, 2))
-
