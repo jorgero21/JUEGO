@@ -1,7 +1,7 @@
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Main.java to edit this template
- */
+ *
 package juego;
 
 import static juego.Superviviente.cargarActual;
@@ -21,14 +21,14 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
-
+*/
 /**
  *
  * @author Jorge
- */
+ 
 public class Prueba2 {
 
-   
+   /*
     public static void main(String[] args) throws ParseException, IOException, ClassNotFoundException {
         // Crear el ataque con 3 dados
         Ataque ataque = new Ataque(3);
@@ -38,7 +38,7 @@ public class Prueba2 {
 
         // Imprimir el ataque
         System.out.println(ataque);
-    }
+    }*/
         // Cargar el histórico de zombis de un superviviente
         /* Superviviente superviviente2 = cargarActual("rochelle");
          for (Zombi zombi : superviviente2.getActual()) {
@@ -321,8 +321,8 @@ public class Prueba2 {
 
     
      
-    }*/
-}
+    }
+}*/
 
    
      

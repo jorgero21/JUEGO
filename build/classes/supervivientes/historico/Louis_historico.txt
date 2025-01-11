@@ -1,0 +1,14 @@
+Historico:
+
+ID: 4 - Tipo: CORREDOR - Normal: false - Berserker: true - Toxico: false - Posicion: ((6, 0))
+
+Historico:
+
+ID: 9 - Tipo: CORREDOR - Normal: false - Berserker: true - Toxico: false - Posicion: ((6, 0))
+
+Historico:
+
+Historico:
+
+Historico:
+

@@ -281,147 +281,144 @@ public class Superviviente implements Activable, Serializable {
     int exitos = ataque.lanzarDados(armaSeleccionada.getValorExito()); 
 
     if (exitos > 0) {
-        System.out.println("Se han obtenido " + exitos + " éxitos");
-        
-        int ataquesRealizados = 0; // Contador de ataques realizados
-        while (exitos > 0) {
-            String decision = "";
-            while (true) {
-                System.out.println("Deseas usar el siguiente exito para atacar? (s/n)");
-                decision = scanner.next();
-                if (decision.equalsIgnoreCase("s")) {
-                    System.out.println("Introduce las coordenadas de la casilla objetivo:");
-                    tablero.mostrarTablero();
+    System.out.println("Se han obtenido " + exitos + " exitos");
 
-                    int fila = -1;
-                    while (fila < 0) {
-                        System.out.print("Fila: ");
-                        if (scanner.hasNextInt()) {
-                            fila = scanner.nextInt();
-                            if (fila < 0) {
-                                System.out.println("Por favor, introduce un numero positivo para la fila");
-                            }
-                        } else {
-                            System.out.println("Entrada invalida. Debes ingresar un numero");
-                            scanner.next(); 
+    int ataquesRealizados = 0; 
+    
+        String decision = "";
+        while (true) {
+            System.out.println("Deseas usar el siguiente exito para atacar? (s/n)");
+            decision = scanner.next();
+            if (decision.equalsIgnoreCase("s")) {
+                System.out.println("Introduce las coordenadas de la casilla objetivo:");
+                tablero.mostrarTablero();
+
+                int fila = -1;
+                while (fila < 0) {
+                    System.out.print("Fila: ");
+                    if (scanner.hasNextInt()) {
+                        fila = scanner.nextInt();
+                        if (fila < 0) {
+                            System.out.println("Por favor, introduce un numero positivo para la fila");
                         }
+                    } else {
+                        System.out.println("Entrada invalida. Debes ingresar un numero");
+                        scanner.next();
                     }
-
-                    int columna = -1;
-                    while (columna < 0) {
-                        System.out.print("Columna: ");
-                        if (scanner.hasNextInt()) {
-                            columna = scanner.nextInt();
-                            if (columna < 0) {
-                                System.out.println("Por favor, introduce un numero positivo para la columna");
-                            }
-                        } else {
-                            System.out.println("Entrada invalida. Debes ingresar un numero");
-                            scanner.next(); 
-                        }
-                    }
-
-                    Casilla casillaObjetivo = tablero.getCasilla(fila, columna);
-                    if (casillaObjetivo == null) {
-                        System.out.println("La casilla objetivo no existe. Intenta de nuevo");
-                        continue; 
-                    }
-
-                    int distancia = tablero.calcularDistancia(this.coordenada, casillaObjetivo.getCoordenadas());
-                    if (armaSeleccionada.getAlcance() == 0 && distancia > 0) {
-                        System.out.println("El arma es de cuerpo a cuerpo. Debes atacar una casilla donde estes");
-                        continue; 
-                    }
-                    if (armaSeleccionada.getAlcance() > 0 && distancia > armaSeleccionada.getAlcance()) {
-                        System.out.println("La casilla esta fuera del alcance del arma");
-                        continue; 
-                    }
-
-                    List<Zombi> zombisEnCasilla = new ArrayList<>();
-                    for (Object entidad : casillaObjetivo.getEntidades()) {
-                        if (entidad instanceof Zombi) {
-                            zombisEnCasilla.add((Zombi) entidad);
-                        }
-                    }
-
-                    if (zombisEnCasilla.isEmpty()) {
-                        System.out.println("No hay zombis en la casilla seleccionada");
-                        continue; 
-                    }
-
-                   // Procesar cada zombi en la casilla
-                    for (Zombi z : zombisEnCasilla) {
-                        if (z.isBerserker() && armaSeleccionada.getAlcance() > 0) {
-                            this.restarAccion();
-                            System.out.println("El zombi Berserker es inmune a ataques a distancia");
-                            exitos--; 
-                            continue;
-                        }
-
-                        if (z.getAguante() <= armaSeleccionada.getPotencia()) {
-                            this.restarAccion();
-                            System.out.println("El zombi " + z.getTipo() + " ha sido eliminado");
-                            agregarZombiEliminado(z);
-                            exitos--;
-                            z.setVivo(false);
-
-                            if (z.isToxico() && this.coordenada.equals(casillaObjetivo.getCoordenadas())) {
-                                // Aquí se aplica la herida tanto al atacante como a los otros supervivientes en la misma casilla
-                                System.out.println("El zombi toxico te ha causado una herida al ser eliminado!");
-
-                                // Recibir herida al atacante
-                                recibirHerida(z);
-
-                                // Recibir herida a todos los supervivientes en la casilla objetivo
-                                for (Object entidad : casillaObjetivo.getEntidades()) {
-                                    if (entidad instanceof Superviviente && entidad != this) {
-                                        Superviviente superviviente = (Superviviente) entidad;
-                                        System.out.println("El zombi tóxico ha causado una herida a " + superviviente.getNombre());
-                                        superviviente.recibirHerida(z); // Aplica la herida al otro superviviente
-                                    }
-                                }
-                            }
-
-                            casillaObjetivo.eliminarEntidad(z);
-                            tablero.mostrarTablero();
-                            agregarZombisEliminados(z);
-                            zombis_eliminados++;
-                            ataquesRealizados++; // Incrementar el contador de ataques realizados
-                            Ataque ataqueRealizado = new Ataque(1); // Crear un ataque individual por cada éxito usado
-                            almacen.registrarAtaque(ataque, rutaAlmacenAtaques);
-
-                        } else {
-                            System.out.println("El zombi " + z.getTipo() + " es demasiado resistente para este ataque");
-                            this.restarAccion();
-                            exitos--; 
-                        }
-
-                        if (exitos == 0) {
-                            break;
-                        }
-                    }
-
-                    if (exitos == 0) {
-                        System.out.println("No hay mas exitos disponibles");
-                    }
-
-
-                } else if (decision.equalsIgnoreCase("n")) {
-                    exitos--;  
-                    System.out.println("El exito no se utilizara");
-                    break; 
-                } else {
-                    System.out.println("Entrada invalida. Por favor, ingresa 's' para usar el éxito o 'n' para no usarlo");
                 }
+
+                int columna = -1;
+                while (columna < 0) {
+                    System.out.print("Columna: ");
+                    if (scanner.hasNextInt()) {
+                        columna = scanner.nextInt();
+                        if (columna < 0) {
+                            System.out.println("Por favor, introduce un numero positivo para la columna");
+                        }
+                    } else {
+                        System.out.println("Entrada invalida. Debes ingresar un numero");
+                        scanner.next();
+                    }
+                }
+
+                Casilla casillaObjetivo = tablero.getCasilla(fila, columna);
+                if (casillaObjetivo == null) {
+                    System.out.println("La casilla objetivo no existe. Intenta de nuevo");
+                    continue;
+                }
+
+                int distancia = tablero.calcularDistancia(this.coordenada, casillaObjetivo.getCoordenadas());
+                if (armaSeleccionada.getAlcance() == 0 && distancia > 0) {
+                    System.out.println("El arma es de cuerpo a cuerpo. Debes atacar una casilla donde estes");
+                    continue;
+                }
+                if (armaSeleccionada.getAlcance() > 0 && distancia > armaSeleccionada.getAlcance()) {
+                    System.out.println("La casilla esta fuera del alcance del arma");
+                    continue;
+                }
+
+                List<Zombi> zombisEnCasilla = new ArrayList<>();
+                for (Object entidad : casillaObjetivo.getEntidades()) {
+                    if (entidad instanceof Zombi) {
+                        zombisEnCasilla.add((Zombi) entidad);
+                    }
+                }
+
+                if (zombisEnCasilla.isEmpty()) {
+                    System.out.println("No hay zombis en la casilla seleccionada");
+                    continue;
+                }
+
+                Zombi objetivoZombi = zombisEnCasilla.get(0); // Seleccionamos el primer zombi de la lista
+
+                if (objetivoZombi.isBerserker() && armaSeleccionada.getAlcance() > 0) {
+                    this.restarAccion();
+                    System.out.println("El zombi Berserker es inmune a ataques a distancia");
+                    almacen.registrarAtaque(ataque, rutaAlmacenAtaques); // Registrar el ataque completo
+                    exitos--;
+                        System.out.println("Has usado un exito. Te quedan " + exitos + " exitos.");
+                    continue;
+                }
+
+                if (objetivoZombi.getAguante() <= armaSeleccionada.getPotencia()) {
+                    this.restarAccion();
+                    System.out.println("El zombi " + objetivoZombi.getTipo() + " ha sido eliminado");
+                    agregarZombiEliminado(objetivoZombi);
+                    exitos--;
+                        System.out.println("Has usado un exito. Te quedan " + exitos + " exitos.");
+                    objetivoZombi.setVivo(false);
+
+                    if (objetivoZombi.isToxico() && this.coordenada.equals(casillaObjetivo.getCoordenadas())) {
+                        System.out.println("El zombi toxico te ha causado una herida al ser eliminado!");
+
+                        recibirHerida(objetivoZombi);
+
+                        for (Object entidad : casillaObjetivo.getEntidades()) {
+                            if (entidad instanceof Superviviente && entidad != this) {
+                                Superviviente superviviente = (Superviviente) entidad;
+                                System.out.println("El zombi toxico ha causado una herida a " + superviviente.getNombre());
+                                superviviente.recibirHerida(objetivoZombi); 
+                            }
+                        }
+                    }
+                    agregarZombisEliminados(objetivoZombi);
+                    almacen.registrarAtaque(ataque, rutaAlmacenAtaques); 
+                    casillaObjetivo.eliminarEntidad(objetivoZombi);
+                    tablero.mostrarTablero();
+                    zombis_eliminados++;
+                    ataquesRealizados++; 
+
+                } else {
+                    System.out.println("El zombi " + objetivoZombi.getTipo() + " es demasiado resistente para este ataque");
+                    this.restarAccion();
+                    exitos--;
+                        System.out.println("Has usado un exito. Te quedan " + exitos + " exitos.");
+                    almacen.registrarAtaque(ataque, rutaAlmacenAtaques); 
+
+                }
+
+                if (exitos == 0) {
+                    System.out.println("No hay mas exitos disponibles");
+                    break;
+                }
+
+            } else if (decision.equalsIgnoreCase("n")) {
+                exitos--;
+                System.out.println("El exito no se utilizara");
+                break;
+            } else {
+                System.out.println("Entrada invalida. Por favor, ingresa 's' para usar el exito o 'n' para no usarlo");
             }
         }
+    
 
-        System.out.println("Numero total de ataques realizados: " + ataquesRealizados);
-        System.out.println("Numero de ataques registrados en el almacen: " + almacen.getAtaques2().size());
+    System.out.println("Numero total de ataques realizados: " + ataquesRealizados);
+    System.out.println("Numero de ataques registrados en el almacen: " + almacen.getAtaques2().size());
 
-    } else {
-        System.out.println("No se consiguieron exitos. El ataque ha fallado");
-    }
+} else {
+    System.out.println("No tienes exitos. El ataque ha fallado");
+}
+
 }
 
 
@@ -619,7 +616,6 @@ public class Superviviente implements Activable, Serializable {
         System.out.println("\nSelecciona un equipo ingresando su numero (o ingresa 0 para finalizar):");
         int opcion = -1;
 
-        // Validar entrada del usuario
         while (true) {
             if (scanner.hasNextInt()) {
                 opcion = scanner.nextInt();
@@ -703,10 +699,9 @@ public boolean buscarEquipo2(Equipo equipo) {
 
     Arma armaSeleccionada = armasEnInventario.get(seleccion - 1);
 
-    // Verificar si el arma ya está en armasActivas
     if (armasActivas.contains(armaSeleccionada)) {
         System.out.println("Ya tienes esta arma activa.");
-        return; // Si ya está activa, no hacemos nada más
+        return; 
     }
 
     if (armasActivas.size() >= 2) {
@@ -763,7 +758,6 @@ public boolean buscarEquipo2(Equipo equipo) {
         }
     }
     
-        // Método para cargar los IDs de los zombis históricos desde el archivo
     private Set<Integer> cargarHistoricoIDs() throws IOException {
         Set<Integer> historicoIDs = new HashSet<>();
         File archivo = new File("src/supervivientes/historico/" + nombre + "_historico.txt");
@@ -772,7 +766,6 @@ public boolean buscarEquipo2(Equipo equipo) {
             try (Scanner scanner = new Scanner(archivo)) {
                 while (scanner.hasNextLine()) {
                     String linea = scanner.nextLine();
-                    // Suponemos que el ID está al principio de la línea, por ejemplo: "ID: 1 - ..."
                     if (linea.contains("ID:")) {
                         int id = Integer.parseInt(linea.split(":")[1].trim().split(" ")[0]);
                         historicoIDs.add(id);
@@ -783,9 +776,7 @@ public boolean buscarEquipo2(Equipo equipo) {
         return historicoIDs;
     }
 
-    // Método para guardar el historial de zombis, solo si su ID es nuevo
     public void guardarHistorico() throws IOException {
-        // Cargar los IDs históricos ya existentes en el archivo
         Set<Integer> historicoIDs = cargarHistoricoIDs();
         
         File archivo = new File("src/supervivientes/historico/" + nombre + "_historico.txt");
@@ -794,7 +785,6 @@ public boolean buscarEquipo2(Equipo equipo) {
         try (PrintWriter writer = new PrintWriter(new FileWriter(archivo, true))) {
             writer.println("Historico:\n");
 
-            // Guardar solo los nuevos zombis que no estén en el historial
             for (Zombi zombi : this.historico) {
                 if (!historicoIDs.contains(zombi.getId())) {
                     writer.println(zombi.toString() + "\n");
@@ -806,18 +796,6 @@ public boolean buscarEquipo2(Equipo equipo) {
         System.out.println("Historico guardado con exito como: " + nombre + "_historico.txt");
     }
 
- 
-   /* public void guardarHistorico() throws IOException {
-        File archivo = new File("src/supervivientes/historico/" + nombre + "_historico.txt");
-         archivo.getParentFile().mkdirs();
-        try (PrintWriter writer = new PrintWriter(new FileWriter(archivo,true))) {
-            writer.println("Historico:\n");
-            for (Zombi zombi : this.historico) {
-                writer.println(zombi.toString() + "\n");
-            }
-        }
-        System.out.println("Historico guardado con exito como: " + nombre + "_historico.txt");
-    }*/
     
     public static Superviviente cargarHistorico(String nombre) throws IOException {
         File archivo = new File("src/supervivientes/historico/" + nombre + "_historico.txt");
@@ -835,7 +813,7 @@ public boolean buscarEquipo2(Equipo equipo) {
                 }
             }
         }
-        System.out.println("Histórico cargado con exito desde: " + nombre + "_historico.txt");
+        System.out.println("Historico cargado con exito desde: " + nombre + "_historico.txt");
         return superviviente;
     }
 
@@ -852,9 +830,9 @@ public boolean buscarEquipo2(Equipo equipo) {
     }
 
     public static Superviviente cargarActual(String nombre) throws IOException {
-        File archivo = new File("src/supervivientes/actua/" + nombre + "_actual.txt");
+        File archivo = new File("src/supervivientes/actual/" + nombre + "_actual.txt");
         if (!archivo.exists()) {
-            System.out.println("Archivo ACTUAL no encontrado: " + nombre + "actual.txt");
+            System.out.println("Archivo ACTUAL no encontrado: " + nombre + "_actual.txt");
            return new Superviviente(nombre);
         }
          Superviviente superviviente = new Superviviente(nombre);
@@ -868,7 +846,7 @@ public boolean buscarEquipo2(Equipo equipo) {
             }
         }
 
-        System.out.println("Actual cargado con exito desde: " + nombre + "actual.txt");
+        System.out.println("Actual cargado con exito desde: " + nombre + "_actual.txt");
         return superviviente;
     }
 
@@ -877,7 +855,7 @@ public boolean buscarEquipo2(Equipo equipo) {
 
     try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(ruta))) {
         oos.writeObject(almacen); 
-        System.out.println("Almacén de ataques guardado exitosamente en: " + ruta);
+        System.out.println("Almacen de ataques guardado exitosamente en: " + ruta);
     } catch (IOException e) {
         System.out.println("Error al guardar el almacen de ataques: " + e.getMessage());
         throw e; 
@@ -890,7 +868,7 @@ public boolean buscarEquipo2(Equipo equipo) {
     }
      @Override
     public int hashCode() {
-        return Objects.hash(nombre); // Usar el nombre u otro atributo único
+        return Objects.hash(nombre); 
     }
 
     @Override

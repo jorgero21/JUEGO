@@ -41,7 +41,7 @@ public class Arma extends Equipo {
     }
     @Override
     public int hashCode() {
-        return Objects.hash(nombre); // Usar el nombre u otro atributo único
+        return Objects.hash(nombre);
     }
     @Override
     public String detalles() {

@@ -1,4 +1,4 @@
-
+/*
 import juego.AlmacenAtaques;
 import juego.Ataque;
 import java.io.FileInputStream;
@@ -36,3 +36,4 @@ public class LeerAlmacenAtaques {
         }
     }
 }
+*/

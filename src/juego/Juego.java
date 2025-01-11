@@ -31,12 +31,10 @@ public class Juego implements Serializable{
     private int turno; 
     private static int contadorZombisPartida=0;  
     private int id=1;
-    private String archivo = "src/estado_partida.txt"; 
     private static List<Zombi> zombisCargados = new ArrayList<>();
     private List<Superviviente> supervivientesSeleccionados; 
     private boolean enJuego;
     private List<Superviviente> almacenSupervivientes;
-    private Set<Equipo> inventario;
     private Inventario almacenInventario;
     private boolean consultaHabilitada = true;
     public static final String DIRECTORIO_GUARDADO = "src/guardados/";
@@ -67,7 +65,7 @@ public class Juego implements Serializable{
         for (int i = 0; i < todosSupervivientes.size(); i++) {
             System.out.println((i + 1) + ". " + todosSupervivientes.get(i).getNombre());
         }
-        while (seleccionados.size() < 1) {
+        while (seleccionados.size() < 2) {
             System.out.print("Introduce el numero del superviviente que deseas seleccionar (o 0 para terminar): ");
             if (scanner.hasNextInt()) {
                 int eleccion = scanner.nextInt() - 1;
@@ -192,8 +190,14 @@ public class Juego implements Serializable{
                 mostrarEstadoJuego();
                 consultarInformacion(superviviente);
             }
+          
             while (superviviente.getAcciones() > 0 && superviviente.isVivo() == true) {
+              
                 comprobarFinDeJuego(supervivientesSeleccionados); 
+                    if (!enJuego) {
+                    return;
+                    
+            }
                 System.out.println(superviviente.getNombre() + ", elige tu accion (moverse/buscar/atacar/elegir arma/no hacer nada):");
                 String accion = scanner.nextLine();
                 switch (accion.toLowerCase()) {
@@ -216,6 +220,11 @@ public class Juego implements Serializable{
                     default:
                         System.out.println("Accion no valida. Intenta de nuevo");
                 }
+                 comprobarFinDeJuego(supervivientesSeleccionados); 
+                    if (!enJuego) {
+                    return;
+                    
+            }
                 System.out.println("Inventario de " + superviviente.getNombre() + ":");
                 for (Equipo equipo : superviviente.getInventario()) {
                        System.out.println("- " + equipo.getNombre());
@@ -238,7 +247,7 @@ public class Juego implements Serializable{
         }
     }
   
-    private void realizarAccionesSupervivientesSimulacionAtaque(Superviviente s) throws IOException {
+    private void realizarAccionesSupervivientesSimulacionAtaque() throws IOException {
         Scanner scanner = new Scanner(System.in);
         for (int i = 0; i < supervivientesSeleccionados.size(); i++) {
             Superviviente superviviente = supervivientesSeleccionados.get(i);
@@ -423,15 +432,45 @@ public class Juego implements Serializable{
                 if (superviviente.isVivo()) {
                     realizarAccionesSupervivientes(superviviente,rutaAlmacenAtaques); 
                     comprobarFinDeJuego(supervivientesSeleccionados); 
-                    if (!enJuego) { 
-                        System.out.println("El juego ha finalizado. Regresando al menu principal...");
-                        return;
+                      if (!enJuego) {
+                for (Superviviente s : supervivientesSeleccionados) {
+                    s.guardarHistorico();
+                    s.guardarActual();
+                }
+               for (Zombi zombi : zombis) {
+                   String nombreArchivo = "src/zombi/zombi" + zombi.getId() + ".dat"; 
+                   try {
+                       guardarZombi(zombi, nombreArchivo);  
+                       System.out.println("Zombi con ID " + zombi.getId() + " guardado en el archivo " + nombreArchivo);
+                    } catch (IOException e) {
+                       System.out.println("Error al guardar el zombi con ID " + zombi.getId() + ": " + e.getMessage());
                     }
                 }
+                guardarContadorZombis();
+                guardarEstadoConNombre(nombrePartida);
+                System.out.println("El juego ha finalizado. Regresando al menu principal...");
+                return;
             }
-            if (!enJuego) { 
-                  System.out.println("El juego ha finalizado. Regresando al menu principal...");
-                  return;
+                }
+            }
+                  if (!enJuego) {
+                for (Superviviente s : supervivientesSeleccionados) {
+                    s.guardarHistorico();
+                    s.guardarActual();
+                }
+               for (Zombi zombi : zombis) {
+                   String nombreArchivo = "src/zombi/zombi" + zombi.getId() + ".dat"; 
+                   try {
+                       guardarZombi(zombi, nombreArchivo);  
+                       System.out.println("Zombi con ID " + zombi.getId() + " guardado en el archivo " + nombreArchivo);
+                    } catch (IOException e) {
+                       System.out.println("Error al guardar el zombi con ID " + zombi.getId() + ": " + e.getMessage());
+                    }
+                }
+                guardarContadorZombis();
+                guardarEstadoConNombre(nombrePartida);
+                System.out.println("El juego ha finalizado. Regresando al menu principal...");
+                return;
             }
             if (enJuego) { 
                 System.out.println("FASE DE ACTIVACION DE ZOMBIS: \n");
@@ -536,10 +575,10 @@ public class Juego implements Serializable{
         enJuego=true;
         activarConsulta();
         comprobarFinDeJuego(supervivientesSeleccionados);
-        if (!enJuego) {
-            System.out.println("El juego ha finalizado. Regresando al menú principal...");
-            return;
-        }
+        if (!enJuego) { // Si el juego ha terminado, salimos del bucle
+                System.out.println("El juego termino, no puedes volver a jugarlo. Regresando al menu principal...");
+                return;
+            }
         if (nombrePartida.isEmpty()) {
             nombrePartida = "Default";
         }
@@ -575,10 +614,25 @@ public class Juego implements Serializable{
                 if (superviviente.isVivo()) {
                     realizarAccionesSupervivientes(superviviente,rutaAlmacenAtaques);
                     comprobarFinDeJuego(supervivientesSeleccionados);
-                     if (!enJuego) {
-                        System.out.println("El juego ha finalizado. Regresando al menú principal...");
-                        return;
+                    if (!enJuego) { // Si el juego ha terminado, salimos del bucle
+                for (Superviviente s : supervivientesSeleccionados) {
+                    s.guardarHistorico();
+                    s.guardarActual();
+                }
+                for (Zombi zombi : zombis) {
+                    String nombreArchivo = "src/zombi/zombi" + zombi.getId() + ".dat";  
+                    try {
+                        guardarZombi(zombi, nombreArchivo);  
+                        System.out.println("Zombi con ID " + zombi.getId() + " guardado en el archivo " + nombreArchivo);
+                    } catch (IOException e) {
+                        System.out.println("Error al guardar el zombi con ID " + zombi.getId() + ": " + e.getMessage());
                     }
+                }
+                guardarContadorZombis();
+                guardarEstadoConNombre(nombrePartida);
+                System.out.println("El juego ha finalizado. Regresando al menu principal...");
+                return;
+            }
                 }
             }
             if (enJuego) {  
@@ -697,13 +751,13 @@ public class Juego implements Serializable{
         cargarInventario();
         List<Superviviente> supervivientesSeleccionados = seleccionarSupervivientesSimulacion(almacenSupervivientes);
         if (supervivientesSeleccionados.isEmpty()) {
-            System.out.println("No se seleccionaron supervivientes.");
+            System.out.println("No se seleccionaron supervivientes");
             return;
         }
         Scanner scanner = new Scanner(System.in);
         int tamaño;
         while (true) {
-            System.out.println("Qué tamanio deseas para el tablero? (Ejemplo: 10 para un tablero 10x10): ");
+            System.out.println("Que tamanio deseas para el tablero? (Ejemplo: 10 para un tablero 10x10): ");
             if (scanner.hasNextInt()) {
                 tamaño = scanner.nextInt();
                 scanner.nextLine(); 
@@ -807,7 +861,7 @@ public class Juego implements Serializable{
             System.out.println("Turno " + turno);
             for (Superviviente superviviente : supervivientesConCoordenadas) {
                 if (superviviente.isVivo()) { 
-                    realizarAccionesSupervivientesSimulacionAtaque(superviviente);
+                    realizarAccionesSupervivientesSimulacionAtaque();
                     if (!superviviente.isVivo()) {
                         System.out.println(superviviente.getNombre() + " ha muerto");
                         enJuego = false;
@@ -1236,7 +1290,7 @@ public class Juego implements Serializable{
                         }
                         break;
                     default: 
-                        System.out.println("Opción inválida. Por favor, elige una opcion valida");
+                        System.out.println("Opcion invalida. Por favor, elige una opcion valida");
                 }
             } else {
                 System.out.println("Entrada invalida. Por favor, elige un número entre 1 y 3");
@@ -1296,7 +1350,7 @@ public class Juego implements Serializable{
                             System.out.println("No hay zombis eliminados por " + nombreSuperviviente + " en esta partida");
                             return;
                         }
-                        System.out.print("¿Deseas ver la lista ordenada por el ID del zombi? (S/N): ");
+                        System.out.print("Deseas ver la lista ordenada por el ID del zombi? (S/N): ");
                         String ordenar = scanner.nextLine().trim().toUpperCase();
                         if (ordenar.equals("S")) {
                             actual.sort(Comparator.comparing(Zombi::getId)); 
@@ -1311,7 +1365,7 @@ public class Juego implements Serializable{
                         System.out.println("No se pudo cargar el estado del juego.");
                     }
                         } else {
-                            System.out.println("Opción inválida.");
+                            System.out.println("Opcion invalida.");
                         }
             } catch (IOException e) {
                  System.out.println("Error al cargar estadísticas: " + e.getMessage());
@@ -1342,7 +1396,7 @@ public class Juego implements Serializable{
                 System.out.println("Estado del juego cargado correctamente");
                 AlmacenAtaques almacen = miJuego.getAlmacenAtaques();  
                 if (almacen != null) {
-                    System.out.println("Numero de ataquesFINAL: " + almacen.getAtaques2().size());
+                    System.out.println("Numero de ataques: " + almacen.getAtaques2().size());
                     for (Ataque ataque : almacen.getAtaques2()) {
                         System.out.println(ataque); 
                     }
@@ -1574,7 +1628,7 @@ public class Juego implements Serializable{
            if (supervivientesEnObjetivo ==  supervivientesSeleccionados.size() && supervivientesConProvisiones ==  supervivientesSeleccionados.size()) {
                enJuego = false;
                System.out.println("Todos los supervivientes han llegado al objetivo con provisiones! Han ganado!");
-               System.exit(0);  
+               return;
            }
            if (algunoEliminado) {
                 enJuego = false;
@@ -1590,7 +1644,7 @@ public class Juego implements Serializable{
         if (supervivientesEnObjetivo == 2 && supervivientesConProvisiones == 2) {
             enJuego = false;
             System.out.println("Todos los supervivientes han llegado al objetivo con provisiones! Han ganado!");
-            System.exit(0);  
+             return;
         }
     }
     
@@ -1742,7 +1796,7 @@ public boolean cargarEstadoConNombreCarga() throws IOException, ClassNotFoundExc
                  return cargarArchivo(archivosSinAtaques.get(0)); 
              }
          } else {
-             System.out.println("Opción no válida. Por favor, ingresa 1 para cargar o 0 para salir.");
+             System.out.println("Opcion no valida. Por favor, ingresa 1 para cargar o 0 para salir.");
              scanner.next();
          }
      }
@@ -1755,42 +1809,36 @@ public boolean cargarEstadoConNombreCarga() throws IOException, ClassNotFoundExc
         if (scanner.hasNextInt()) {
             opcion = scanner.nextInt();
             
-            // Si el usuario elige 0, salir
             if (opcion == 0) {
                 System.out.println("No se ha cargado ningun archivo");
-                return false; // Salir sin cargar nada
+                return false; 
             }
 
-            // Validar si la opción está dentro del rango de archivos disponibles
             if (opcion <= 0 || opcion > archivosSinAtaques.size()) {
                 System.out.println("Opcion no valida. El numero de archivo no existe. Intenta de nuevo.");
             } else {
-                // Obtener el nombre del archivo seleccionado
-                return cargarArchivo(archivosSinAtaques.get(opcion - 1)); // Cargar el archivo de la lista filtrada
+                return cargarArchivo(archivosSinAtaques.get(opcion - 1)); 
             }
         } else {
-            // Si no se ingresa un número válido, mostrar mensaje de error y seguir pidiendo
             System.out.println("Opcion no valida. Por favor, ingresa un número entero");
-            scanner.next(); // Limpiar el buffer del scanner para evitar un bucle infinito
+            scanner.next(); 
         }
     }
 
-    return false; // En caso de que se salga del bucle sin una opción válida
+    return false; 
 }
 
 // Método auxiliar para cargar el archivo
 private boolean cargarArchivo(File archivo) throws IOException, ClassNotFoundException, ClassCastException {
     String nombreArchivo = archivo.getName();
     if (!nombreArchivo.endsWith(".dat")) {
-        nombreArchivo += ".dat"; // Añadir la extensión si no la tiene
+        nombreArchivo += ".dat"; 
     }
 
     String nombrePartida = nombreArchivo.replace(".dat", "");
-   // String rutaCompletaJuego = DIRECTORIO_GUARDADO + File.separator + nombreArchivo;
    String rutaCompletaJuego = DIRECTORIO_GUARDADO + nombreArchivo;
     String rutaCompletaAtaques = DIRECTORIO_GUARDADO + nombreArchivo.replace(".dat", "_ataques.dat");
 
-    // Cargar el estado del juego desde el archivo
     Object obj = cargarJuego(rutaCompletaJuego);
     if (obj == null) {
         System.out.println("El archivo esta vacio o no se pudo leer.");
@@ -1802,7 +1850,6 @@ private boolean cargarArchivo(File archivo) throws IOException, ClassNotFoundExc
         return false;
     }
 
-    // Asignar los valores del juego cargado
     Juego estadoCargado = (Juego) obj;
     this.supervivientesSeleccionados = estadoCargado.getSupervivientesSeleccionados();
     this.zombis = estadoCargado.zombis;
@@ -1811,14 +1858,11 @@ private boolean cargarArchivo(File archivo) throws IOException, ClassNotFoundExc
     this.enJuego = estadoCargado.enJuego;
     System.out.println("Juego cargado con exito desde: " + rutaCompletaJuego);
 
-    // Cargar la lista de ataques
     List<Ataque> listaDeAtaques = cargarListaAtaques(rutaCompletaAtaques);
     System.out.println("Lista de ataques cargada correctamente desde: " + rutaCompletaAtaques);
     System.out.println("Numero de ataques cargados1111: " + listaDeAtaques.size());
 
     ataque.setAtaques2(listaDeAtaques);
-
-    // Continuar con el juego cargado
     continuarJuego(nombrePartida);
     return true;
 }
@@ -1859,7 +1903,7 @@ public boolean cargarEstadoConNombreCarga2() throws IOException, ClassNotFoundEx
                  return cargarArchivo2(archivosSinAtaques.get(0)); 
              }
          } else {
-             System.out.println("Opción no válida. Por favor, ingresa 1 para cargar o 0 para salir.");
+             System.out.println("Opcion no valida. Por favor, ingresa 1 para cargar o 0 para salir.");
              scanner.next();
          }
      }
@@ -1872,41 +1916,35 @@ public boolean cargarEstadoConNombreCarga2() throws IOException, ClassNotFoundEx
         if (scanner.hasNextInt()) {
             opcion = scanner.nextInt();
             
-            // Si el usuario elige 0, salir
             if (opcion == 0) {
                 System.out.println("No se ha cargado ningun archivo");
                 return false; // Salir sin cargar nada
             }
 
-            // Validar si la opción está dentro del rango de archivos disponibles
             if (opcion <= 0 || opcion > archivosSinAtaques.size()) {
                 System.out.println("Opcion no valida. El numero de archivo no existe. Intenta de nuevo.");
             } else {
-                // Obtener el nombre del archivo seleccionado
-                return cargarArchivo2(archivosSinAtaques.get(opcion - 1)); // Cargar el archivo de la lista filtrada
+                return cargarArchivo2(archivosSinAtaques.get(opcion - 1)); 
             }
         } else {
-            // Si no se ingresa un número válido, mostrar mensaje de error y seguir pidiendo
             System.out.println("Opcion no valida. Por favor, ingresa un número entero");
-            scanner.next(); // Limpiar el buffer del scanner para evitar un bucle infinito
+            scanner.next(); 
         }
     }
 
-    return false; // En caso de que se salga del bucle sin una opción válida
+    return false; 
 }
 
-    // Método auxiliar para cargar el archivo
 private boolean cargarArchivo2(File archivo) throws IOException, ClassNotFoundException, ClassCastException {
     String nombreArchivo = archivo.getName();
     if (!nombreArchivo.endsWith(".dat")) {
-        nombreArchivo += ".dat"; // Añadir la extensión si no la tiene
+        nombreArchivo += ".dat"; 
     }
 
     String nombrePartida = nombreArchivo.replace(".dat", "");
     String rutaCompletaJuego = DIRECTORIO_GUARDADO  + nombreArchivo;
     String rutaCompletaAtaques = DIRECTORIO_GUARDADO  + nombreArchivo.replace(".dat", "_ataques.dat");
 
-    // Cargar el estado del juego desde el archivo
     Object obj = cargarJuego(rutaCompletaJuego);
     if (obj == null) {
         System.out.println("El archivo esta vacio o no se pudo leer.");
@@ -1918,7 +1956,6 @@ private boolean cargarArchivo2(File archivo) throws IOException, ClassNotFoundEx
         return false;
     }
 
-    // Asignar los valores del juego cargado
     Juego estadoCargado = (Juego) obj;
     this.supervivientesSeleccionados = estadoCargado.getSupervivientesSeleccionados();
     this.zombis = estadoCargado.zombis;
@@ -1927,7 +1964,6 @@ private boolean cargarArchivo2(File archivo) throws IOException, ClassNotFoundEx
     this.enJuego = estadoCargado.enJuego;
     System.out.println("Juego cargado con exito desde: " + rutaCompletaJuego);
 
-    // Cargar la lista de ataques
     List<Ataque> listaDeAtaques = cargarListaAtaques(rutaCompletaAtaques);
     System.out.println("Lista de ataques cargada correctamente desde: " + rutaCompletaAtaques);
     System.out.println("Numero de ataques cargados333333: " + listaDeAtaques.size());

@@ -246,39 +246,32 @@ public class Zombi implements Activable, Serializable {
     public Coordenada getCoordenadas() { return posicion; }
 
     public static Zombi desdeString(String texto) {
-    // Asegurarse de que la línea tenga el formato esperado
     String[] partes = texto.split(" - ");
    
-    // Extraer ID
     int id = Integer.parseInt(partes[0].split(": ")[1]);
 
-    // Extraer tipo de zombi
     TipoZombi tipo = TipoZombi.valueOf(partes[1].split(": ")[1].trim());
 
-    // Extraer si es normal, berserker y tóxico
     boolean esNormal = Boolean.parseBoolean(partes[2].split(": ")[1]);
     boolean esBerserker = Boolean.parseBoolean(partes[3].split(": ")[1]);
     boolean esToxico = Boolean.parseBoolean(partes[4].split(": ")[1]);
 
-    // Extraer coordenadas
     String[] coordenadas = partes[5].split(": ")[1].replace("(", "").replace(")", "").split(", ");
     if (coordenadas.length != 2) {
         throw new IllegalArgumentException("Coordenadas mal formateadas: " + partes[5]);
     }
 
-    // Crear objeto Coordenada
     Coordenada posicion = new Coordenada(Integer.parseInt(coordenadas[0]), Integer.parseInt(coordenadas[1]));
      if (partes.length != 6) {
         throw new IllegalArgumentException("Formato incorrecto: " + texto);
     }
     
-    // Devolver el zombi creado
     return new Zombi(id, tipo, esNormal, esBerserker, esToxico, posicion);
 }
 
  @Override
     public int hashCode() {
-        return Objects.hash(id); // Usar el nombre u otro atributo único
+        return Objects.hash(id); 
     }
 
     @Override

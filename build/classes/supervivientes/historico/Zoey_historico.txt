@@ -1,14 +1,18 @@
 Historico:
 
-ID: 3 - Tipo: CAMINANTE - Normal: false - Berserker: true - Toxico: false - Posicion: ((3, 5))
-
-ID: 1 - Tipo: CAMINANTE - Normal: false - Berserker: true - Toxico: false - Posicion: ((5, 5))
-
-ID: 5 - Tipo: CORREDOR - Normal: false - Berserker: true - Toxico: false - Posicion: ((5, 4))
-
-
+ID: 1 - Tipo: CAMINANTE - Normal: false - Berserker: true - Toxico: false - Posicion: ((1, 3))
 
 Historico:
 
-ID: 2 - Tipo: CORREDOR - Normal: false - Berserker: false - Toxico: true - Posicion: ((5, 4))
+ID: 6 - Tipo: CAMINANTE - Normal: true - Berserker: false - Toxico: false - Posicion: ((0, 2))
+
+Historico:
+
+ID: 12 - Tipo: CORREDOR - Normal: false - Berserker: false - Toxico: true - Posicion: ((0, 2))
+
+ID: 11 - Tipo: CAMINANTE - Normal: true - Berserker: false - Toxico: false - Posicion: ((0, 3))
+
+Historico:
+
+Historico:
 
