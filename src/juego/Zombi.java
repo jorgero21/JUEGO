@@ -232,9 +232,9 @@ public class Zombi implements Activable, Serializable {
         }
     }
     @Override
-   public void atacar(){
-        System.out.println("Ataque del zombi");
-   }
+    public void atacar(){
+         System.out.println("Ataque del zombi");
+    }
    
     public void atacar(Tablero tablero, AlmacenAtaques almacen, String rutaAlmacenAtaques,Superviviente objetivo) {
         atacar();
@@ -269,7 +269,7 @@ public class Zombi implements Activable, Serializable {
     return new Zombi(id, tipo, esNormal, esBerserker, esToxico, posicion);
 }
 
- @Override
+    @Override
     public int hashCode() {
         return Objects.hash(id); 
     }

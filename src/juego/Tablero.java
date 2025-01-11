@@ -20,7 +20,6 @@ public class Tablero implements Serializable{
     private final List<Superviviente> supervivientes;
     private  List<Zombi> zombis;
     private final Coordenada objetivo; 
-    private Set<Coordenada> casillasBuscadas = new HashSet<>();
     private static final Random random = new Random();
 
     public Tablero() {
@@ -28,10 +27,10 @@ public class Tablero implements Serializable{
         this.supervivientes = new ArrayList<>();
         this.zombis = new ArrayList<>();
         //IMPORTANTE PONERLO EN 9,9 PARA EL FINAL
-        this.objetivo = new Coordenada(0, 2); 
+        this.objetivo = new Coordenada(9, 9); 
         for (int i = 0; i < tamaño; i++) {
             for (int j = 0; j < tamaño; j++) {
-                tablero[i][j] = new Casilla(new Coordenada(i, j), this);
+                tablero[i][j] = new Casilla(new Coordenada(i, j));
             }
         }
     }
@@ -41,10 +40,10 @@ public class Tablero implements Serializable{
         this.tablero = new Casilla[tamaño][tamaño];
         this.supervivientes = new ArrayList<>();
         this.zombis = new ArrayList<>();
-        this.objetivo = new Coordenada(0, 2);  
+        this.objetivo = new Coordenada(9, 9);  
         for (int i = 0; i < tamaño; i++) {
             for (int j = 0; j < tamaño; j++) {
-                tablero[i][j] = new Casilla(new Coordenada(i, j), this);
+                tablero[i][j] = new Casilla(new Coordenada(i, j));
             }
         }
     }
@@ -411,4 +410,56 @@ public class Tablero implements Serializable{
         Casilla casilla = obtenerCasilla(coordenada);
         return (int) (casilla != null ? casilla.getEntidades().stream().filter(e -> e instanceof Zombi).count() : 0);
     }
+    
+    public List<Casilla> obtenerCasillasEnAlcance(Coordenada origen, int alcance) {
+    List<Casilla> casillasEnAlcance = new ArrayList<>();
+
+    for (int i = -alcance; i <= alcance; i++) {
+        for (int j = -alcance; j <= alcance; j++) {
+            Coordenada coordenadaActual = new Coordenada(origen.getFila() + i, origen.getColumna() + j);
+
+            if (calcularDistancia(origen, coordenadaActual) <= alcance) {
+                Casilla casilla = getCasilla(coordenadaActual.getFila(), coordenadaActual.getColumna());
+                if (casilla != null) {
+                    casillasEnAlcance.add(casilla);
+                }
+            }
+        }
+    }
+
+        return casillasEnAlcance;
+    }
+    
+    public boolean hayZombisEnAlcance(Coordenada origen, int alcance) {
+        List<Casilla> casillasEnAlcance = obtenerCasillasEnAlcance(origen, alcance);
+
+        for (Casilla casilla : casillasEnAlcance) {
+            for (Object entidad : casilla.getEntidades()) {
+                if (entidad instanceof Zombi) {
+                    return true; 
+                }
+            }
+        }
+
+        return false; 
+    }
+    
+    public boolean hayZombisVulnerablesEnAlcance(Coordenada origen, int alcance, int potencia) {
+        List<Casilla> casillasEnAlcance = obtenerCasillasEnAlcance(origen, alcance);
+
+        for (Casilla casilla : casillasEnAlcance) {
+            for (Object entidad : casilla.getEntidades()) {
+                if (entidad instanceof Zombi) {
+                    Zombi zombi = (Zombi) entidad;
+
+                    if (!(zombi.isBerserker() && alcance > 0) && zombi.getAguante() <= potencia) {
+                        return true; 
+                    }
+                }
+            }
+        }
+
+        return false; 
+    }
+
 }

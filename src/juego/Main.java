@@ -11,7 +11,7 @@ public class Main {
             Scanner scanner = new Scanner(System.in);
 
             System.out.println("Quieres cargar un juego guardado? (S/N)");
-            String respuesta = scanner.nextLine().trim().toUpperCase(); // Leer la respuesta y convertirla a mayúsculas
+            String respuesta = scanner.nextLine().trim().toUpperCase(); 
 
             if (respuesta.equals("S")) {
                 boolean archivoCargado = juego.cargarEstadoConNombreCarga();

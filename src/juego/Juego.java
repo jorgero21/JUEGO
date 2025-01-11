@@ -65,7 +65,7 @@ public class Juego implements Serializable{
         for (int i = 0; i < todosSupervivientes.size(); i++) {
             System.out.println((i + 1) + ". " + todosSupervivientes.get(i).getNombre());
         }
-        while (seleccionados.size() < 2) {
+        while (seleccionados.size() < 4) {
             System.out.print("Introduce el numero del superviviente que deseas seleccionar (o 0 para terminar): ");
             if (scanner.hasNextInt()) {
                 int eleccion = scanner.nextInt() - 1;
@@ -373,7 +373,7 @@ public class Juego implements Serializable{
         try {
             for (int i = 1; i <= contadorZombisPartida; i++) {
                 Zombi zombi = cargarZombi("src/zombi/zombi" + i + ".dat");
-                zombisCargados.add(zombi);  // Agregar a la lista de zombis cargados
+                zombisCargados.add(zombi);   
             }
             System.out.println("Zombis cargados correctamente");
         } catch (IOException | ClassNotFoundException e) {
@@ -488,9 +488,8 @@ public class Juego implements Serializable{
             }
             System.out.println("Fin del turno " + turno);
             comprobarFinDeJuego(supervivientesSeleccionados);
-            if (!enJuego) { // Si el juego ha terminado, salimos del bucle
+            if (!enJuego) { 
                 for (Superviviente s : supervivientesSeleccionados) {
-                    //s.guardarEnArchivo();
                     s.guardarHistorico();
                     s.guardarActual();
                 }
@@ -575,7 +574,7 @@ public class Juego implements Serializable{
         enJuego=true;
         activarConsulta();
         comprobarFinDeJuego(supervivientesSeleccionados);
-        if (!enJuego) { // Si el juego ha terminado, salimos del bucle
+        if (!enJuego) { 
                 System.out.println("El juego termino, no puedes volver a jugarlo. Regresando al menu principal...");
                 return;
             }
@@ -614,7 +613,7 @@ public class Juego implements Serializable{
                 if (superviviente.isVivo()) {
                     realizarAccionesSupervivientes(superviviente,rutaAlmacenAtaques);
                     comprobarFinDeJuego(supervivientesSeleccionados);
-                    if (!enJuego) { // Si el juego ha terminado, salimos del bucle
+                    if (!enJuego) { 
                 for (Superviviente s : supervivientesSeleccionados) {
                     s.guardarHistorico();
                     s.guardarActual();
@@ -650,7 +649,7 @@ public class Juego implements Serializable{
             }
             System.out.println("Fin del turno " + turno);
             comprobarFinDeJuego(supervivientesSeleccionados);
-            if (!enJuego) { // Si el juego ha terminado, salimos del bucle
+            if (!enJuego) {  
                 for (Superviviente s : supervivientesSeleccionados) {
                     s.guardarHistorico();
                     s.guardarActual();
@@ -680,7 +679,7 @@ public class Juego implements Serializable{
                 }
             }
             if (respuesta.equals("s")) {
-                guardarEstadoConNombre(nombrePartida); // Guardar el estado del juego
+                guardarEstadoConNombre(nombrePartida); 
                 System.out.println("Juego guardado.");
             }
             respuesta = "";
@@ -703,9 +702,9 @@ public class Juego implements Serializable{
                      s.guardarActual();
                 }
             for (Zombi zombi : zombis) {
-                String nombreArchivo = "src/zombi/zombi" + zombi.getId() + ".dat";  // Crea el nombre del archivo con el ID del zombi
+                String nombreArchivo = "src/zombi/zombi" + zombi.getId() + ".dat";  
                 try {
-                    guardarZombi(zombi, nombreArchivo);  // Llama a la función de guardar
+                    guardarZombi(zombi, nombreArchivo);  
                     System.out.println("Zombi con ID " + zombi.getId() + " guardado en el archivo " + nombreArchivo);
                 } catch (IOException e) {
                     System.out.println("Error al guardar el zombi con ID " + zombi.getId() + ": " + e.getMessage());
@@ -1418,7 +1417,7 @@ public class Juego implements Serializable{
         Scanner scanner = new Scanner(System.in);
         boolean consultaTerminada = false;
         while (!consultaTerminada) {
-            System.out.println("\n Deseas consultar informacion de algún superviviente o zombi?");
+            System.out.println("\n Deseas consultar informacion de algun superviviente o zombi?");
             System.out.println("1. Consultar superviviente");
             System.out.println("2. Consultar zombi");
             System.out.println("3. Continuar con las acciones de " + supervivienteActual.getNombre());
@@ -1432,7 +1431,7 @@ public class Juego implements Serializable{
                         for (int i = 0; i < supervivientesSeleccionados.size(); i++) {
                             System.out.println((i + 1) + ". " + supervivientesSeleccionados.get(i).getNombre());
                         }
-                        System.out.print("Elige el número del superviviente para ver detalles: ");
+                        System.out.print("Elige el numero del superviviente para ver detalles: ");
                         if (scanner.hasNextInt()) {
                             int indiceSuperviviente = scanner.nextInt() - 1;
                             scanner.nextLine(); 
@@ -1520,7 +1519,7 @@ public class Juego implements Serializable{
         Scanner scanner = new Scanner(System.in);
         boolean consultaTerminada = false;
         while (!consultaTerminada) {
-            System.out.println("\n Deseas consultar información de algun superviviente?");
+            System.out.println("\n Deseas consultar informacion de algun superviviente?");
             System.out.println("1. Consultar superviviente");
             System.out.println("2. Continuar con las acciones de " + supervivienteActual.getNombre());
             System.out.print("Elige una opción: ");
@@ -1828,7 +1827,6 @@ public boolean cargarEstadoConNombreCarga() throws IOException, ClassNotFoundExc
     return false; 
 }
 
-// Método auxiliar para cargar el archivo
 private boolean cargarArchivo(File archivo) throws IOException, ClassNotFoundException, ClassCastException {
     String nombreArchivo = archivo.getName();
     if (!nombreArchivo.endsWith(".dat")) {
@@ -1860,7 +1858,7 @@ private boolean cargarArchivo(File archivo) throws IOException, ClassNotFoundExc
 
     List<Ataque> listaDeAtaques = cargarListaAtaques(rutaCompletaAtaques);
     System.out.println("Lista de ataques cargada correctamente desde: " + rutaCompletaAtaques);
-    System.out.println("Numero de ataques cargados1111: " + listaDeAtaques.size());
+    System.out.println("Numero de ataques cargados: " + listaDeAtaques.size());
 
     ataque.setAtaques2(listaDeAtaques);
     continuarJuego(nombrePartida);
@@ -1918,7 +1916,7 @@ public boolean cargarEstadoConNombreCarga2() throws IOException, ClassNotFoundEx
             
             if (opcion == 0) {
                 System.out.println("No se ha cargado ningun archivo");
-                return false; // Salir sin cargar nada
+                return false;  
             }
 
             if (opcion <= 0 || opcion > archivosSinAtaques.size()) {
@@ -1966,7 +1964,7 @@ private boolean cargarArchivo2(File archivo) throws IOException, ClassNotFoundEx
 
     List<Ataque> listaDeAtaques = cargarListaAtaques(rutaCompletaAtaques);
     System.out.println("Lista de ataques cargada correctamente desde: " + rutaCompletaAtaques);
-    System.out.println("Numero de ataques cargados333333: " + listaDeAtaques.size());
+    System.out.println("Numero de ataques cargados: " + listaDeAtaques.size());
 
     ataque.setAtaques2(listaDeAtaques);
 
@@ -1975,10 +1973,10 @@ private boolean cargarArchivo2(File archivo) throws IOException, ClassNotFoundEx
 
     public AlmacenAtaques cargarAlmacenAtaques(String ruta) {
     try (ObjectInputStream entrada = new ObjectInputStream(new FileInputStream(ruta))) {
-        return (AlmacenAtaques) entrada.readObject();  // Deserializar el objeto almacen de ataques
+        return (AlmacenAtaques) entrada.readObject();  
     } catch (IOException | ClassNotFoundException e) {
         System.out.println("Error al cargar el almacén de ataques: " + e.getMessage());
-        return new AlmacenAtaques();  // Retornar un almacén vacío si ocurre un error
+        return new AlmacenAtaques();  
     }
 }
     public void guardarAlmacenAtaques(AlmacenAtaques almacen, String ruta) {
@@ -2008,7 +2006,7 @@ private boolean cargarArchivo2(File archivo) throws IOException, ClassNotFoundEx
     }
     public static void guardarJuego(Object objeto, String nombreArchivo) {
            try (ObjectOutputStream salida = new ObjectOutputStream(new FileOutputStream(nombreArchivo))) {
-               salida.writeObject(objeto); // Serializa el objeto y lo escribe en el archivo
+               salida.writeObject(objeto); 
                System.out.println("Juego guardado con exito");
            } catch (IOException e) {
                e.printStackTrace();
@@ -2067,21 +2065,21 @@ private boolean cargarArchivo2(File archivo) throws IOException, ClassNotFoundEx
             String linea = lector.readLine();
             if (linea != null) {
                 this.contadorZombisPartida = Integer.parseInt(linea);
-                System.out.println("Contador de zombis cargado: " + contadorZombisPartida);  // Confirma que se ha cargado el valor
+                System.out.println("Contador de zombis cargado: " + contadorZombisPartida);  
             } else {
-                this.contadorZombisPartida = 0;  // Si no hay archivo, iniciamos desde 0
+                this.contadorZombisPartida = 0;  
                 System.out.println("No se encontro archivo, contador iniciado a 0");
             }
         } catch (IOException e) {
             System.out.println("Error al cargar el contador de zombis: " + e.getMessage());
-            this.contadorZombisPartida = 0;  // Empezamos desde 0 si no se pudo cargar
+            this.contadorZombisPartida = 0;  
         }
     }
 
     public void guardarContadorZombis() {
         try (BufferedWriter escritor = new BufferedWriter(new FileWriter("src/estado_partida.txt"))) {
-            escritor.write(String.valueOf(contadorZombisPartida));  // Guardamos el último ID generado
-            System.out.println("Contador de zombis guardado: " + contadorZombisPartida);  // Confirma que se ha guardado
+            escritor.write(String.valueOf(contadorZombisPartida));  
+            System.out.println("Contador de zombis guardado: " + contadorZombisPartida);  
         } catch (IOException e) {
             System.out.println("Error al guardar el contador de zombis: " + e.getMessage());
         }

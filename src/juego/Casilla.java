@@ -11,7 +11,6 @@ public class Casilla implements Activable, Serializable{
     private Coordenada posicion; 
     private List<Object> entidades; 
     private boolean explorada;  
-    private Tablero tablero;   
     private Superviviente superviviente;  
     private Set<Coordenada> casillasBuscadas = new HashSet<>();
     private List<Superviviente> supervivientes;  
@@ -19,10 +18,9 @@ public class Casilla implements Activable, Serializable{
     private boolean fueBuscada;
 
     // Constructor
-    public Casilla(Coordenada posicion, Tablero tablero) {
+    public Casilla(Coordenada posicion) {
         this.posicion = posicion;
         this.explorada = false; 
-        this.tablero = tablero;
         this.supervivientes = new ArrayList<>();
         this.zombis = new ArrayList<>();
         this.entidades = new ArrayList<>();
