@@ -16,3 +16,7 @@ Historico:
 
 ID: 6 - Tipo: CAMINANTE - Normal: true - Berserker: false - Toxico: false - Posicion: ((2, 3))
 
+Historico:
+
+Historico:
+

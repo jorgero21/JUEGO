@@ -1737,248 +1737,248 @@ public class Juego implements Serializable{
 
 
 
-public void listarArchivosGuardados() {
-    List<File> archivosSinAtaques = new ArrayList<>();
-    File carpeta = new File(DIRECTORIO_GUARDADO);
-    File[] archivos = carpeta.listFiles((dir, name) -> name.toLowerCase().endsWith(".dat"));
-    if (archivos != null && archivos.length > 0) {
-        for (File archivo : archivos) {
-            if (!archivo.getName().contains("_ataques")) {
-                archivosSinAtaques.add(archivo);  
+    public void listarArchivosGuardados() {
+        List<File> archivosSinAtaques = new ArrayList<>();
+        File carpeta = new File(DIRECTORIO_GUARDADO);
+        File[] archivos = carpeta.listFiles((dir, name) -> name.toLowerCase().endsWith(".dat"));
+        if (archivos != null && archivos.length > 0) {
+            for (File archivo : archivos) {
+                if (!archivo.getName().contains("_ataques")) {
+                    archivosSinAtaques.add(archivo);  
+                }
+            }
+            if (archivosSinAtaques.isEmpty()) {
+                System.out.println("No hay archivos disponibles para cargar (sin '_ataques').");
+            } else {
+                System.out.println("Archivos disponibles para cargar:");
+                for (int i = 0; i < archivosSinAtaques.size(); i++) {
+                    System.out.println((i + 1) + ". " + archivosSinAtaques.get(i).getName());
+                }
+            }
+        } else {
+            System.out.println("No hay archivos .dat disponibles en el directorio.");
+        }
+    }
+
+    public boolean cargarEstadoConNombreCarga() throws IOException, ClassNotFoundException, ClassCastException {
+        List<File> archivosSinAtaques = new ArrayList<>();
+        File carpeta = new File(DIRECTORIO_GUARDADO);
+        File[] archivos = carpeta.listFiles((dir, name) -> name.toLowerCase().endsWith(".dat"));
+        if (archivos != null && archivos.length > 0) {
+            for (File archivo : archivos) {
+                if (!archivo.getName().contains("_ataques")) {
+                    archivosSinAtaques.add(archivo);  
+                }
             }
         }
         if (archivosSinAtaques.isEmpty()) {
-            System.out.println("No hay archivos disponibles para cargar (sin '_ataques').");
-        } else {
-            System.out.println("Archivos disponibles para cargar:");
-            for (int i = 0; i < archivosSinAtaques.size(); i++) {
-                System.out.println((i + 1) + ". " + archivosSinAtaques.get(i).getName());
-            }
+            System.out.println("No hay archivos disponibles para cargar (sin '_ataques')");
+            return false; 
         }
-    } else {
-        System.out.println("No hay archivos .dat disponibles en el directorio.");
-    }
-}
+        System.out.println("Archivos disponibles para cargar:");
+        for (int i = 0; i < archivosSinAtaques.size(); i++) {
+            System.out.println((i + 1) + ". " + archivosSinAtaques.get(i).getName());
+        }
+        if (archivosSinAtaques.size() == 1) {
+            System.out.println("Solo hay un archivo disponible: " + archivosSinAtaques.get(0).getName());
+            int opcion = -1; 
+            Scanner scanner = new Scanner(System.in);
+            while (opcion != 0 && opcion != 1) {
+                System.out.println("Introduce 1 para cargar este archivo, o 0 para salir:");
+                if (scanner.hasNextInt()) {
+                    opcion = scanner.nextInt();
+                    if (opcion == 0) {
+                        System.out.println("No se ha cargado ningun archivo");
+                        return false; 
+                    }
+                    if (opcion == 1) {
+                        return cargarArchivo(archivosSinAtaques.get(0)); 
+                    }
+                } else {
+                    System.out.println("Opcion no valida. Por favor, ingresa 1 para cargar o 0 para salir.");
+                    scanner.next();
+                }
+            }
+            return false;
+        }
+        int opcion = -1;
+        Scanner scanner = new Scanner(System.in);
+        while (opcion != 0) {
+            System.out.println("Introduce el numero del archivo que deseas cargar, o 0 para salir:");
+            if (scanner.hasNextInt()) {
+                opcion = scanner.nextInt();
 
-public boolean cargarEstadoConNombreCarga() throws IOException, ClassNotFoundException, ClassCastException {
-    List<File> archivosSinAtaques = new ArrayList<>();
-    File carpeta = new File(DIRECTORIO_GUARDADO);
-    File[] archivos = carpeta.listFiles((dir, name) -> name.toLowerCase().endsWith(".dat"));
-    if (archivos != null && archivos.length > 0) {
-        for (File archivo : archivos) {
-            if (!archivo.getName().contains("_ataques")) {
-                archivosSinAtaques.add(archivo);  
+                if (opcion == 0) {
+                    System.out.println("No se ha cargado ningun archivo");
+                    return false; 
+                }
+
+                if (opcion <= 0 || opcion > archivosSinAtaques.size()) {
+                    System.out.println("Opcion no valida. El numero de archivo no existe. Intenta de nuevo.");
+                } else {
+                    return cargarArchivo(archivosSinAtaques.get(opcion - 1)); 
+                }
+            } else {
+                System.out.println("Opcion no valida. Por favor, ingresa un número entero");
+                scanner.next(); 
             }
         }
-    }
-    if (archivosSinAtaques.isEmpty()) {
-        System.out.println("No hay archivos disponibles para cargar (sin '_ataques')");
+
         return false; 
     }
-    System.out.println("Archivos disponibles para cargar:");
-    for (int i = 0; i < archivosSinAtaques.size(); i++) {
-        System.out.println((i + 1) + ". " + archivosSinAtaques.get(i).getName());
+
+    private boolean cargarArchivo(File archivo) throws IOException, ClassNotFoundException, ClassCastException {
+        String nombreArchivo = archivo.getName();
+        if (!nombreArchivo.endsWith(".dat")) {
+            nombreArchivo += ".dat"; 
+        }
+
+        String nombrePartida = nombreArchivo.replace(".dat", "");
+       String rutaCompletaJuego = DIRECTORIO_GUARDADO + nombreArchivo;
+        String rutaCompletaAtaques = DIRECTORIO_GUARDADO + nombreArchivo.replace(".dat", "_ataques.dat");
+
+        Object obj = cargarJuego(rutaCompletaJuego);
+        if (obj == null) {
+            System.out.println("El archivo esta vacio o no se pudo leer.");
+            return false;
+        }
+
+        if (!(obj instanceof Juego)) {
+            System.out.println("El archivo no contiene un objeto de tipo 'Juego'. Tipo encontrado: " + obj.getClass().getName());
+            return false;
+        }
+
+        Juego estadoCargado = (Juego) obj;
+        this.supervivientesSeleccionados = estadoCargado.getSupervivientesSeleccionados();
+        this.zombis = estadoCargado.zombis;
+        this.tablero = estadoCargado.tablero;
+        this.turno = estadoCargado.turno;
+        this.enJuego = estadoCargado.enJuego;
+        System.out.println("Juego cargado con exito desde: " + rutaCompletaJuego);
+
+        List<Ataque> listaDeAtaques = cargarListaAtaques(rutaCompletaAtaques);
+        System.out.println("Lista de ataques cargada correctamente desde: " + rutaCompletaAtaques);
+        System.out.println("Numero de ataques cargados: " + listaDeAtaques.size());
+
+        ataque.setAtaques2(listaDeAtaques);
+        continuarJuego(nombrePartida);
+        return true;
     }
-    if (archivosSinAtaques.size() == 1) {
-     System.out.println("Solo hay un archivo disponible: " + archivosSinAtaques.get(0).getName());
-     int opcion = -1; 
-     Scanner scanner = new Scanner(System.in);
-     while (opcion != 0 && opcion != 1) {
-         System.out.println("Introduce 1 para cargar este archivo, o 0 para salir:");
-         if (scanner.hasNextInt()) {
-             opcion = scanner.nextInt();
-             if (opcion == 0) {
-                 System.out.println("No se ha cargado ningun archivo");
-                 return false; 
+
+
+    public boolean cargarEstadoConNombreCarga2() throws IOException, ClassNotFoundException, ClassCastException {
+        List<File> archivosSinAtaques = new ArrayList<>();
+        File carpeta = new File(DIRECTORIO_GUARDADO);
+        File[] archivos = carpeta.listFiles((dir, name) -> name.toLowerCase().endsWith(".dat"));
+        if (archivos != null && archivos.length > 0) {
+            for (File archivo : archivos) {
+                if (!archivo.getName().contains("_ataques")) {
+                    archivosSinAtaques.add(archivo);  
+                }
+            }
+        }
+        if (archivosSinAtaques.isEmpty()) {
+            System.out.println("No hay archivos disponibles para cargar (sin '_ataques')");
+            return false; 
+        }
+        System.out.println("Archivos disponibles para cargar:");
+        for (int i = 0; i < archivosSinAtaques.size(); i++) {
+            System.out.println((i + 1) + ". " + archivosSinAtaques.get(i).getName());
+        }
+        if (archivosSinAtaques.size() == 1) {
+         System.out.println("Solo hay un archivo disponible: " + archivosSinAtaques.get(0).getName());
+         int opcion = -1; 
+         Scanner scanner = new Scanner(System.in);
+         while (opcion != 0 && opcion != 1) {
+             System.out.println("Introduce 1 para cargar este archivo, o 0 para salir:");
+             if (scanner.hasNextInt()) {
+                 opcion = scanner.nextInt();
+                 if (opcion == 0) {
+                     System.out.println("No se ha cargado ningun archivo");
+                     return false; 
+                 }
+                 if (opcion == 1) {
+                     return cargarArchivo2(archivosSinAtaques.get(0)); 
+                 }
+             } else {
+                 System.out.println("Opcion no valida. Por favor, ingresa 1 para cargar o 0 para salir.");
+                 scanner.next();
              }
-             if (opcion == 1) {
-                 return cargarArchivo(archivosSinAtaques.get(0)); 
-             }
-         } else {
-             System.out.println("Opcion no valida. Por favor, ingresa 1 para cargar o 0 para salir.");
-             scanner.next();
          }
+         return false;
      }
-     return false;
- }
-    int opcion = -1;
-    Scanner scanner = new Scanner(System.in);
-    while (opcion != 0) {
-        System.out.println("Introduce el numero del archivo que deseas cargar, o 0 para salir:");
-        if (scanner.hasNextInt()) {
-            opcion = scanner.nextInt();
-            
-            if (opcion == 0) {
-                System.out.println("No se ha cargado ningun archivo");
-                return false; 
-            }
+        int opcion = -1;
+        Scanner scanner = new Scanner(System.in);
+        while (opcion != 0) {
+            System.out.println("Introduce el numero del archivo que deseas cargar, o 0 para salir:");
+            if (scanner.hasNextInt()) {
+                opcion = scanner.nextInt();
 
-            if (opcion <= 0 || opcion > archivosSinAtaques.size()) {
-                System.out.println("Opcion no valida. El numero de archivo no existe. Intenta de nuevo.");
+                if (opcion == 0) {
+                    System.out.println("No se ha cargado ningun archivo");
+                    return false;  
+                }
+
+                if (opcion <= 0 || opcion > archivosSinAtaques.size()) {
+                    System.out.println("Opcion no valida. El numero de archivo no existe. Intenta de nuevo.");
+                } else {
+                    return cargarArchivo2(archivosSinAtaques.get(opcion - 1)); 
+                }
             } else {
-                return cargarArchivo(archivosSinAtaques.get(opcion - 1)); 
-            }
-        } else {
-            System.out.println("Opcion no valida. Por favor, ingresa un número entero");
-            scanner.next(); 
-        }
-    }
-
-    return false; 
-}
-
-private boolean cargarArchivo(File archivo) throws IOException, ClassNotFoundException, ClassCastException {
-    String nombreArchivo = archivo.getName();
-    if (!nombreArchivo.endsWith(".dat")) {
-        nombreArchivo += ".dat"; 
-    }
-
-    String nombrePartida = nombreArchivo.replace(".dat", "");
-   String rutaCompletaJuego = DIRECTORIO_GUARDADO + nombreArchivo;
-    String rutaCompletaAtaques = DIRECTORIO_GUARDADO + nombreArchivo.replace(".dat", "_ataques.dat");
-
-    Object obj = cargarJuego(rutaCompletaJuego);
-    if (obj == null) {
-        System.out.println("El archivo esta vacio o no se pudo leer.");
-        return false;
-    }
-
-    if (!(obj instanceof Juego)) {
-        System.out.println("El archivo no contiene un objeto de tipo 'Juego'. Tipo encontrado: " + obj.getClass().getName());
-        return false;
-    }
-
-    Juego estadoCargado = (Juego) obj;
-    this.supervivientesSeleccionados = estadoCargado.getSupervivientesSeleccionados();
-    this.zombis = estadoCargado.zombis;
-    this.tablero = estadoCargado.tablero;
-    this.turno = estadoCargado.turno;
-    this.enJuego = estadoCargado.enJuego;
-    System.out.println("Juego cargado con exito desde: " + rutaCompletaJuego);
-
-    List<Ataque> listaDeAtaques = cargarListaAtaques(rutaCompletaAtaques);
-    System.out.println("Lista de ataques cargada correctamente desde: " + rutaCompletaAtaques);
-    System.out.println("Numero de ataques cargados: " + listaDeAtaques.size());
-
-    ataque.setAtaques2(listaDeAtaques);
-    continuarJuego(nombrePartida);
-    return true;
-}
-
-
-public boolean cargarEstadoConNombreCarga2() throws IOException, ClassNotFoundException, ClassCastException {
-    List<File> archivosSinAtaques = new ArrayList<>();
-    File carpeta = new File(DIRECTORIO_GUARDADO);
-    File[] archivos = carpeta.listFiles((dir, name) -> name.toLowerCase().endsWith(".dat"));
-    if (archivos != null && archivos.length > 0) {
-        for (File archivo : archivos) {
-            if (!archivo.getName().contains("_ataques")) {
-                archivosSinAtaques.add(archivo);  
+                System.out.println("Opcion no valida. Por favor, ingresa un número entero");
+                scanner.next(); 
             }
         }
-    }
-    if (archivosSinAtaques.isEmpty()) {
-        System.out.println("No hay archivos disponibles para cargar (sin '_ataques')");
+
         return false; 
     }
-    System.out.println("Archivos disponibles para cargar:");
-    for (int i = 0; i < archivosSinAtaques.size(); i++) {
-        System.out.println((i + 1) + ". " + archivosSinAtaques.get(i).getName());
-    }
-    if (archivosSinAtaques.size() == 1) {
-     System.out.println("Solo hay un archivo disponible: " + archivosSinAtaques.get(0).getName());
-     int opcion = -1; 
-     Scanner scanner = new Scanner(System.in);
-     while (opcion != 0 && opcion != 1) {
-         System.out.println("Introduce 1 para cargar este archivo, o 0 para salir:");
-         if (scanner.hasNextInt()) {
-             opcion = scanner.nextInt();
-             if (opcion == 0) {
-                 System.out.println("No se ha cargado ningun archivo");
-                 return false; 
-             }
-             if (opcion == 1) {
-                 return cargarArchivo2(archivosSinAtaques.get(0)); 
-             }
-         } else {
-             System.out.println("Opcion no valida. Por favor, ingresa 1 para cargar o 0 para salir.");
-             scanner.next();
-         }
-     }
-     return false;
- }
-    int opcion = -1;
-    Scanner scanner = new Scanner(System.in);
-    while (opcion != 0) {
-        System.out.println("Introduce el numero del archivo que deseas cargar, o 0 para salir:");
-        if (scanner.hasNextInt()) {
-            opcion = scanner.nextInt();
-            
-            if (opcion == 0) {
-                System.out.println("No se ha cargado ningun archivo");
-                return false;  
-            }
 
-            if (opcion <= 0 || opcion > archivosSinAtaques.size()) {
-                System.out.println("Opcion no valida. El numero de archivo no existe. Intenta de nuevo.");
-            } else {
-                return cargarArchivo2(archivosSinAtaques.get(opcion - 1)); 
-            }
-        } else {
-            System.out.println("Opcion no valida. Por favor, ingresa un número entero");
-            scanner.next(); 
+    private boolean cargarArchivo2(File archivo) throws IOException, ClassNotFoundException, ClassCastException {
+        String nombreArchivo = archivo.getName();
+        if (!nombreArchivo.endsWith(".dat")) {
+            nombreArchivo += ".dat"; 
         }
+
+        String nombrePartida = nombreArchivo.replace(".dat", "");
+        String rutaCompletaJuego = DIRECTORIO_GUARDADO  + nombreArchivo;
+        String rutaCompletaAtaques = DIRECTORIO_GUARDADO  + nombreArchivo.replace(".dat", "_ataques.dat");
+
+        Object obj = cargarJuego(rutaCompletaJuego);
+        if (obj == null) {
+            System.out.println("El archivo esta vacio o no se pudo leer.");
+            return false;
+        }
+
+        if (!(obj instanceof Juego)) {
+            System.out.println("El archivo no contiene un objeto de tipo 'Juego'. Tipo encontrado: " + obj.getClass().getName());
+            return false;
+        }
+
+        Juego estadoCargado = (Juego) obj;
+        this.supervivientesSeleccionados = estadoCargado.getSupervivientesSeleccionados();
+        this.zombis = estadoCargado.zombis;
+        this.tablero = estadoCargado.tablero;
+        this.turno = estadoCargado.turno;
+        this.enJuego = estadoCargado.enJuego;
+        System.out.println("Juego cargado con exito desde: " + rutaCompletaJuego);
+
+        List<Ataque> listaDeAtaques = cargarListaAtaques(rutaCompletaAtaques);
+        System.out.println("Lista de ataques cargada correctamente desde: " + rutaCompletaAtaques);
+        System.out.println("Numero de ataques cargados: " + listaDeAtaques.size());
+
+        ataque.setAtaques2(listaDeAtaques);
+
+        return true;
     }
-
-    return false; 
-}
-
-private boolean cargarArchivo2(File archivo) throws IOException, ClassNotFoundException, ClassCastException {
-    String nombreArchivo = archivo.getName();
-    if (!nombreArchivo.endsWith(".dat")) {
-        nombreArchivo += ".dat"; 
-    }
-
-    String nombrePartida = nombreArchivo.replace(".dat", "");
-    String rutaCompletaJuego = DIRECTORIO_GUARDADO  + nombreArchivo;
-    String rutaCompletaAtaques = DIRECTORIO_GUARDADO  + nombreArchivo.replace(".dat", "_ataques.dat");
-
-    Object obj = cargarJuego(rutaCompletaJuego);
-    if (obj == null) {
-        System.out.println("El archivo esta vacio o no se pudo leer.");
-        return false;
-    }
-
-    if (!(obj instanceof Juego)) {
-        System.out.println("El archivo no contiene un objeto de tipo 'Juego'. Tipo encontrado: " + obj.getClass().getName());
-        return false;
-    }
-
-    Juego estadoCargado = (Juego) obj;
-    this.supervivientesSeleccionados = estadoCargado.getSupervivientesSeleccionados();
-    this.zombis = estadoCargado.zombis;
-    this.tablero = estadoCargado.tablero;
-    this.turno = estadoCargado.turno;
-    this.enJuego = estadoCargado.enJuego;
-    System.out.println("Juego cargado con exito desde: " + rutaCompletaJuego);
-
-    List<Ataque> listaDeAtaques = cargarListaAtaques(rutaCompletaAtaques);
-    System.out.println("Lista de ataques cargada correctamente desde: " + rutaCompletaAtaques);
-    System.out.println("Numero de ataques cargados: " + listaDeAtaques.size());
-
-    ataque.setAtaques2(listaDeAtaques);
-
-    return true;
-}
 
     public AlmacenAtaques cargarAlmacenAtaques(String ruta) {
-    try (ObjectInputStream entrada = new ObjectInputStream(new FileInputStream(ruta))) {
-        return (AlmacenAtaques) entrada.readObject();  
-    } catch (IOException | ClassNotFoundException e) {
-        System.out.println("Error al cargar el almacén de ataques: " + e.getMessage());
-        return new AlmacenAtaques();  
+        try (ObjectInputStream entrada = new ObjectInputStream(new FileInputStream(ruta))) {
+            return (AlmacenAtaques) entrada.readObject();  
+        } catch (IOException | ClassNotFoundException e) {
+            System.out.println("Error al cargar el almacén de ataques: " + e.getMessage());
+            return new AlmacenAtaques();  
+        }
     }
-}
     public void guardarAlmacenAtaques(AlmacenAtaques almacen, String ruta) {
         try (ObjectOutputStream salida = new ObjectOutputStream(new FileOutputStream(ruta))) {
             salida.writeObject(almacen);

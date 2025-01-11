@@ -1,14 +1,2 @@
 Actual:
 
-ID: 0 - Tipo: CAMINANTE - Normal: false - Berserker: false - Toxico: true - Posicion: ((3, 3))
-
-ID: 5 - Tipo: ABOMINACION - Normal: true - Berserker: false - Toxico: false - Posicion: ((1, 4))
-
-ID: 3 - Tipo: CAMINANTE - Normal: true - Berserker: false - Toxico: false - Posicion: ((2, 4))
-
-ID: 4 - Tipo: CAMINANTE - Normal: false - Berserker: false - Toxico: true - Posicion: ((3, 5))
-
-ID: 1 - Tipo: CAMINANTE - Normal: false - Berserker: true - Toxico: false - Posicion: ((3, 6))
-
-ID: 6 - Tipo: CAMINANTE - Normal: true - Berserker: false - Toxico: false - Posicion: ((2, 3))
-
